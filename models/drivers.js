@@ -21,12 +21,24 @@ function getDrivers(res) {
 }
 
 router.post('/', function(req, res) {
-  var data = {text: req.body.text, complete: false};
+  var data = {
+    name: req.body["data[name]"],
+    surname: req.body["data[surname]"],
+    mother_name: req.body["data[mother_name]"],
+    father_name: req.body["data[father_name]"],
+    id_number: req.body["data[id_number]"],
+    birthplace: req.body["data[birthplace]"],
+    phone_number: req.body["data[phone_number]"]
+  };
   pg.connect(connectionString, function(err, client, done) {
-    var query = client.query('insert into drivers(text, complete) values($1, $2)', [data.text, data.complete]);
+    var query = client.query('insert into drivers(name, surname, id_number, mother_name, father_name, birthplace, phone_number) values($1, $2, $3, $4, $5, $6, $7) returning *',
+      [data.name, data.surname, data.id_number, data.mother_name, data.father_name, data.birthplace, data.phone_number]);
+    var result = {};
+    query.on('row', function(row) {
+      result = row;
+    });
     query.on('end', function() {
-      client.end();
-      getDrivers(res);
+      res.json({row: result});
     });
     if(err) {
       console.log(err);
@@ -38,14 +50,26 @@ router.get('/', function(req, res) {
   getDrivers(res);
 });
 
-router.put('/:driver_id', function(req, res) {
-  var id = req.params.driver_id;
-  var data = {text: req.body.text, complete: req.body.complete};
+router.put('/', function(req, res) {
+  var id = req.body.driver_id;
+  var data = {
+    name: req.body["data[name]"],
+    surname: req.body["data[surname]"],
+    mother_name: req.body["data[mother_name]"],
+    father_name: req.body["data[father_name]"],
+    id_number: req.body["data[id_number]"],
+    birthplace: req.body["data[birthplace]"],
+    phone_number: req.body["data[phone_number]"]
+  };
   pg.connect(connectionString, function(err, client, done) {
-    var query = client.query('update items set text=($1), complete=($2) where id=($3)', [data.text, data.complete, id]);
+    var query = client.query('update drivers set name=($1), surname=($2), id_number=($3), mother_name=($4), father_name=($5), birthplace=($6), phone_number=($7) where id=($8) returning *',
+      [data.name, data.surname, data.id_number, data.mother_name, data.father_name, data.birthplace, data.phone_number, id]);
+    var result = {};
+    query.on('row', function(row) {
+      result = row;
+    });
     query.on('end', function() {
-      client.end();
-      getTodos(res);
+      res.json({row: result});
     });
     if(err) {
       console.log(err);
@@ -53,14 +77,13 @@ router.put('/:driver_id', function(req, res) {
   });
 });
 
-router.delete('/:driver_id', function(req, res) {
-  var id = req.params.todo_id;
-
+router.delete('/', function(req, res) {
+  var ids = req.body['id[]'];
   pg.connect(connectionString, function(err, client, done) {
-    var query = client.query('delete from items where id=($1)', [id]);
+    var query = client.query('delete from drivers where id=any($1::int[])', [ids]);
     query.on('end', function() {
       client.end();
-      getTodos(res);
+      res.end();
     });
     if(err) {
       console.log(err);
