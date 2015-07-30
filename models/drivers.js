@@ -21,12 +21,24 @@ function getDrivers(res) {
 }
 
 router.post('/', function(req, res) {
-  var data = {text: req.body.text, complete: false};
+  var data = {
+    name: req.body["data[name]"],
+    surname: req.body["data[surname]"],
+    mother_name: req.body["data[mother_name]"],
+    father_name: req.body["data[father_name]"],
+    id_number: req.body["data[id_number]"],
+    birthplace: req.body["data[birthplace]"],
+    phone_number: req.body["data[phone_number]"]
+  };
   pg.connect(connectionString, function(err, client, done) {
-    var query = client.query('insert into drivers(text, complete) values($1, $2)', [data.text, data.complete]);
+    var query = client.query('insert into drivers(name, surname, id_number, mother_name, father_name, birthplace, phone_number) values($1, $2, $3, $4, $5, $6, $7) returning *',
+      [data.name, data.surname, data.id_number, data.mother_name, data.father_name, data.birthplace, data.phone_number]);
+    var result = {};
+    query.on('row', function(row) {
+      result = row;
+    });
     query.on('end', function() {
-      client.end();
-      getDrivers(res);
+      res.json({row: result});
     });
     if(err) {
       console.log(err);
