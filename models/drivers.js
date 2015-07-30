@@ -77,14 +77,13 @@ router.put('/', function(req, res) {
   });
 });
 
-router.delete('/:driver_id', function(req, res) {
-  var id = req.params.todo_id;
-
+router.delete('/', function(req, res) {
+  var ids = req.body['id[]'];
   pg.connect(connectionString, function(err, client, done) {
-    var query = client.query('delete from items where id=($1)', [id]);
+    var query = client.query('delete from drivers where id=any($1::int[])', [ids]);
     query.on('end', function() {
       client.end();
-      getTodos(res);
+      res.end();
     });
     if(err) {
       console.log(err);
