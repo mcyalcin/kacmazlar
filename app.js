@@ -8,15 +8,19 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var drivers = require('./routes/drivers');
 var driversDb = require('./models/drivers');
+var locations = require('./routes/locations');
+var locationsDb = require('./models/locations');
+var cmrPrices = require('./routes/cmrPrices');
+var cmrPricesDb = require('./models/cmrPrices');
 var firms = require('./routes/firms');
-//var firmsDb = require('./models/firms');
+var firmsDb = require('./models/firms');
 //var users = require('./routes/users');
 
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'ejs');
 
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
@@ -28,8 +32,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/drivers', drivers);
 app.use('/drivers/api', driversDb);
+app.use('/locations', locations);
+app.use('/locations/api', locationsDb);
+app.use('/cmr_prices', cmrPrices);
+app.use('/cmr_prices/api', cmrPricesDb);
 app.use('/firms', firms);
-//app.use('/firms/api', firmsDb);
+app.use('/firms/api', firmsDb);
 //app.use('/users', users);
 
 // catch 404 and forward to error handler

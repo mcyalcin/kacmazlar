@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 router.get('/', function(req, res, next) {
-  res.render('firms', {});
+  res.render('cmrPrices', {});
 });
 
 module.exports = router;
