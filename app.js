@@ -13,7 +13,7 @@ var locationsDb = require('./models/locations');
 var cmrPrices = require('./routes/cmrPrices');
 var cmrPricesDb = require('./models/cmrPrices');
 var firms = require('./routes/firms');
-//var firmsDb = require('./models/firms');
+var firmsDb = require('./models/firms');
 //var users = require('./routes/users');
 
 var app = express();
@@ -37,7 +37,7 @@ app.use('/locations/api', locationsDb);
 app.use('/cmr_prices', cmrPrices);
 app.use('/cmr_prices/api', cmrPricesDb);
 app.use('/firms', firms);
-//app.use('/firms/api', firmsDb);
+app.use('/firms/api', firmsDb);
 //app.use('/users', users);
 
 // catch 404 and forward to error handler
