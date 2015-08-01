@@ -40,6 +40,7 @@ router.post('/', function (req, res) {
   var data = {
     name: req.body["data[name]"],
     address: req.body["data[address]"],
+    phone_number: req.body["data[phone_number]"],
     is_c2_holder: (req.body["data[is_c2_holder]"] === 'Evet'),
     is_license_holder: (req.body["data[is_license_holder]"] === 'Evet'),
     is_subcontractor: (req.body["data[is_subcontractor]"] === 'Evet')
@@ -47,8 +48,8 @@ router.post('/', function (req, res) {
   var action = req.body.action;
   if (action == 'create') {
     pg.connect(connectionString, function (err, client, done) {
-      var query = client.query('insert into firms(name, address, is_c2_holder, is_license_holder, is_subcontractor) values($1, $2, $3, $4, $5) returning *',
-        [data.name, data.address, data.is_c2_holder, data.is_license_holder, data.is_subcontractor]);
+      var query = client.query('insert into firms(name, address, phone_number, is_c2_holder, is_license_holder, is_subcontractor) values($1, $2, $3, $4, $5, $6) returning *',
+        [data.name, data.address, data.phone_number, data.is_c2_holder, data.is_license_holder, data.is_subcontractor]);
       var result = {};
       query.on('row', function (row) {
         row.DT_RowId = row.id;
@@ -96,8 +97,8 @@ router.post('/', function (req, res) {
   } else if (action == 'edit') {
     var id = req.body.id;
     pg.connect(connectionString, function (err, client, done) {
-      var query = client.query('update firms set name=($1), address=($2), is_c2_holder=($3), is_license_holder=($4), is_subcontractor=($5) where id=($6) returning *',
-        [data.name, data.address, data.is_c2_holder, data.is_license_holder, data.is_subcontractor, id]);
+      var query = client.query('update firms set name=($1), address=($2), phone_number=($3), is_c2_holder=($4), is_license_holder=($5), is_subcontractor=($6) where id=($7) returning *',
+        [data.name, data.address, data.phone_number, data.is_c2_holder, data.is_license_holder, data.is_subcontractor, id]);
       var result = {};
       query.on('row', function (row) {
         row.DT_RowId = row.id;

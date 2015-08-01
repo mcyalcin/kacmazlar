@@ -5,3 +5,11 @@ body {
 a {
   color: #00B7FF;
 }
+
+a.save-collection {
+  margin-left: 1em;
+}
+
+div.dataTables_filter {
+  margin-right: 2em;
+}
