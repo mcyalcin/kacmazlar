@@ -35,7 +35,7 @@ $(document).ready(function () {
   });
 
   $('#drivers').dataTable({
-    dom: "Tfrtip",
+    dom: "T<'clear'>lfrtip",
     ajax: "drivers/api",
     columns: [
       {"data": "name"},
