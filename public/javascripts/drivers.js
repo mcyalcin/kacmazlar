@@ -27,8 +27,8 @@ $(document).ready(function () {
       name: "phone_number"
     }
       //,  {
-      //  label: "Doğum Yeri:",
-      //  name: "birthplace",
+      //  label: "Doğum Tarihi:",
+      //  name: "birth_date",
       //  type: "date"
       //}
     ]

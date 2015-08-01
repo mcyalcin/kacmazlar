@@ -3,10 +3,10 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 
-function getDrivers(res) {
+function getLocations(res) {
   var results = [];
   pg.connect(connectionString, function (err, client, done) {
-    var query = client.query('select * from drivers order by id asc');
+    var query = client.query('select * from locations order by id asc');
     query.on('row', function (row) {
       row.DT_RowId = row.id;
       results.push(row);
@@ -24,18 +24,13 @@ function getDrivers(res) {
 router.post('/', function (req, res) {
   var data = {
     name: req.body["data[name]"],
-    surname: req.body["data[surname]"],
-    mother_name: req.body["data[mother_name]"],
-    father_name: req.body["data[father_name]"],
-    id_number: req.body["data[id_number]"],
-    birthplace: req.body["data[birthplace]"],
-    phone_number: req.body["data[phone_number]"]
+    country: req.body["data[country]"]
   };
   var action = req.body.action;
   if (action == 'create') {
     pg.connect(connectionString, function (err, client, done) {
-      var query = client.query('insert into drivers(name, surname, id_number, mother_name, father_name, birthplace, phone_number) values($1, $2, $3, $4, $5, $6, $7) returning *',
-        [data.name, data.surname, data.id_number, data.mother_name, data.father_name, data.birthplace, data.phone_number]);
+      var query = client.query('insert into locations(name, country) values($1, $2) returning *',
+        [data.name, data.country]);
       var result = {};
       query.on('row', function (row) {
         row.DT_RowId = row.id;
@@ -53,9 +48,9 @@ router.post('/', function (req, res) {
     pg.connect(connectionString, function (err, client, done) {
       var query;
       if (typeof ids == 'string') {
-        query = client.query('delete from drivers where id=($1)', [id]);
+        query = client.query('delete from locations where id=($1)', [id]);
       } else {
-        query = client.query('delete from drivers where id=any($1::int[])', [ids]);
+        query = client.query('delete from locations where id=any($1::int[])', [ids]);
       }
       query.on('end', function () {
         client.end();
@@ -68,7 +63,7 @@ router.post('/', function (req, res) {
   } else if (action == 'edit') {
     var id = req.body.id;
     pg.connect(connectionString, function (err, client, done) {
-      var query = client.query('update drivers set name=($1), surname=($2), id_number=($3), mother_name=($4), father_name=($5), birthplace=($6), phone_number=($7) where id=($8) returning *',
+      var query = client.query('update locations set name=($1), country=($2) where id=($3) returning *',
         [data.name, data.surname, data.id_number, data.mother_name, data.father_name, data.birthplace, data.phone_number, id]);
       var result = {};
       query.on('row', function (row) {
@@ -85,7 +80,7 @@ router.post('/', function (req, res) {
 });
 
 router.get('/', function (req, res) {
-  getDrivers(res);
+  getLocations(res);
 });
 
 module.exports = router;
