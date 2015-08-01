@@ -72,6 +72,7 @@ router.post('/', function (req, res) {
         [data.name, data.surname, data.id_number, data.mother_name, data.father_name, data.birthplace, data.phone_number, id]);
       var result = {};
       query.on('row', function (row) {
+        row.DT_RowId = row.id;
         result = row;
       });
       query.on('end', function () {

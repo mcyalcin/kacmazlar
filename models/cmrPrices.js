@@ -3,12 +3,29 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 
-function getLocations(res) {
+function formatDate(date) {
+  var monthNames = [
+    "Ocak", "Şubat", "Mart",
+    "Nisan", "Mayıs", "Haziran", "Temmuz",
+    "Ağustos", "Eylül", "Ekim",
+    "Kasım", "Aralık"
+  ];
+
+  var day = date.getDate();
+  var monthIndex = date.getMonth();
+  var year = date.getFullYear();
+
+  return day + ' ' + monthNames[monthIndex] + ' ' + year;
+}
+
+function getCmrPrices(res) {
   var results = [];
   pg.connect(connectionString, function (err, client, done) {
-    var query = client.query('select * from locations order by id asc');
+    var query = client.query('select * from cmr_prices order by id asc');
     query.on('row', function (row) {
       row.DT_RowId = row.id;
+      row.start_date = formatDate(new Date(row.start_date));
+      row.end_date = formatDate(new Date(row.end_date));
       results.push(row);
     });
     query.on('end', function () {
@@ -23,17 +40,20 @@ function getLocations(res) {
 
 router.post('/', function (req, res) {
   var data = {
-    name: req.body["data[name]"],
-    country: req.body["data[country]"]
+    price: req.body["data[price]"],
+    start_date: req.body["data[start_date]"],
+    end_date: req.body["data[end_date]"]
   };
   var action = req.body.action;
   if (action == 'create') {
     pg.connect(connectionString, function (err, client, done) {
-      var query = client.query('insert into locations(name, country) values($1, $2) returning *',
-        [data.name, data.country]);
+      var query = client.query('insert into cmr_prices(price, start_date, end_date) values($1, $2, $3) returning *',
+        [data.price, data.start_date, data.end_date]);
       var result = {};
       query.on('row', function (row) {
         row.DT_RowId = row.id;
+        row.start_date = formatDate(new Date(row.start_date));
+        row.end_date = formatDate(new Date(row.end_date));
         result = row;
       });
       query.on('end', function () {
@@ -48,9 +68,9 @@ router.post('/', function (req, res) {
     pg.connect(connectionString, function (err, client, done) {
       var query;
       if (typeof ids == 'string') {
-        query = client.query('delete from locations where id=($1)', [id]);
+        query = client.query('delete from cmr_prices where id=($1)', [id]);
       } else {
-        query = client.query('delete from locations where id=any($1::int[])', [ids]);
+        query = client.query('delete from cmr_prices where id=any($1::int[])', [ids]);
       }
       query.on('end', function () {
         client.end();
@@ -63,11 +83,13 @@ router.post('/', function (req, res) {
   } else if (action == 'edit') {
     var id = req.body.id;
     pg.connect(connectionString, function (err, client, done) {
-      var query = client.query('update locations set name=($1), country=($2) where id=($3) returning *',
-        [data.name, data.country, id]);
+      var query = client.query('update cmr_prices set price=($1), start_date=($2), end_date=($3) where id=($4) returning *',
+        [data.price, data.start_date, data.end_date, id]);
       var result = {};
       query.on('row', function (row) {
         row.DT_RowId = row.id;
+        row.start_date = formatDate(new Date(row.start_date));
+        row.end_date = formatDate(new Date(row.end_date));
         result = row;
       });
       query.on('end', function () {
@@ -81,7 +103,7 @@ router.post('/', function (req, res) {
 });
 
 router.get('/', function (req, res) {
-  getLocations(res);
+  getCmrPrices(res);
 });
 
 module.exports = router;
