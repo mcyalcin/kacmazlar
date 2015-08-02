@@ -44,7 +44,7 @@ $(document).ready(function () {
   });
 
   $('#firms').dataTable({
-    dom: "Tlfrtip",
+    dom: "T<'clear'>lfrtip",
     ajax: "firms/api",
     columns: [
       {"data": "name"},
