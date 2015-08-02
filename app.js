@@ -14,7 +14,11 @@ var cmrPrices = require('./routes/cmrPrices');
 var cmrPricesDb = require('./models/cmrPrices');
 var firms = require('./routes/firms');
 var firmsDb = require('./models/firms');
-//var users = require('./routes/users');
+var users = require('./routes/users');
+var products = require('./routes/products');
+var transportations = require('./routes/transportations');
+var transportFees = require('./routes/transportFees');
+var wastageCosts = require('./routes/wastageCosts');
 
 var app = express();
 
@@ -38,7 +42,11 @@ app.use('/cmr_prices', cmrPrices);
 app.use('/cmr_prices/api', cmrPricesDb);
 app.use('/firms', firms);
 app.use('/firms/api', firmsDb);
-//app.use('/users', users);
+app.use('/products', products);
+app.use('/transportations', transportations);
+app.use('/transport_fees', transportFees);
+app.use('/wastage_costs', wastageCosts);
+app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

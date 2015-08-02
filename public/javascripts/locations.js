@@ -28,10 +28,18 @@ $(document).ready(function () {
     ],
     tableTools: {
       sRowSelect: "os",
+      sSwfPath: "/swf/copy_csv_xls_pdf.swf",
       aButtons: [
         {sExtends: "editor_create", editor: editor},
         {sExtends: "editor_edit", editor: editor},
-        {sExtends: "editor_remove", editor: editor}
+        {sExtends: "editor_remove", editor: editor},
+        {
+          sExtends: "collection",
+          sButtonText: "Save",
+          sButtonClass: "save-collection",
+          aButtons: [ 'copy', 'csv', 'pdf' ]
+        },
+        'print'
       ]
     }
   });
