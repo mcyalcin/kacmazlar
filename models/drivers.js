@@ -53,7 +53,7 @@ router.post('/', function (req, res) {
     pg.connect(connectionString, function (err, client, done) {
       var query;
       if (typeof ids == 'string') {
-        query = client.query('delete from drivers where id=($1)', [id]);
+        query = client.query('delete from drivers where id=($1)', [ids]);
       } else {
         query = client.query('delete from drivers where id=any($1::int[])', [ids]);
       }
