@@ -24,8 +24,8 @@ function getCmrPrices(res) {
     var query = client.query('select * from cmr_prices order by id asc');
     query.on('row', function (row) {
       row.DT_RowId = row.id;
-      row.start_date = formatDate(new Date(row.start_date));
-      row.end_date = formatDate(new Date(row.end_date));
+      if (row.start_date) row.start_date = formatDate(new Date(row.start_date));
+      if (row.end_date) row.end_date = formatDate(new Date(row.end_date));
       results.push(row);
     });
     query.on('end', function () {
@@ -47,13 +47,22 @@ router.post('/', function (req, res) {
   var action = req.body.action;
   if (action == 'create') {
     pg.connect(connectionString, function (err, client, done) {
-      var query = client.query('insert into cmr_prices(price, start_date, end_date) values($1, $2, $3) returning *',
-        [data.price, data.start_date, data.end_date]);
+      var query;
+      if (data.start_date)
+        if (data.end_date)
+          query = client.query('insert into cmr_prices(price, start_date, end_date) values($1, $2, $3) returning *',
+            [data.price, data.start_date, data.end_date]);
+        else
+          query = client.query('insert into cmr_prices(price, start_date) values($1, $2) returning *',
+            [data.price, data.start_date]);
+      else
+        query = client.query('insert into cmr_prices(price) values($1) returning *',
+          [data.price]);
       var result = {};
       query.on('row', function (row) {
         row.DT_RowId = row.id;
-        row.start_date = formatDate(new Date(row.start_date));
-        row.end_date = formatDate(new Date(row.end_date));
+        if (row.start_date) row.start_date = formatDate(new Date(row.start_date));
+        if (row.end_date) row.end_date = formatDate(new Date(row.end_date));
         result = row;
       });
       query.on('end', function () {
@@ -88,8 +97,8 @@ router.post('/', function (req, res) {
       var result = {};
       query.on('row', function (row) {
         row.DT_RowId = row.id;
-        row.start_date = formatDate(new Date(row.start_date));
-        row.end_date = formatDate(new Date(row.end_date));
+        if (row.start_date) row.start_date = formatDate(new Date(row.start_date));
+        if (row.end_date) row.end_date = formatDate(new Date(row.end_date));
         result = row;
       });
       query.on('end', function () {
