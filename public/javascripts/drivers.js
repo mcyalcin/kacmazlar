@@ -23,14 +23,14 @@ $(document).ready(function () {
       label: "Doğum Yeri:",
       name: "birthplace"
     }, {
+      label: "Doğum Tarihi:",
+      name: "birth_date",
+      type: "date"
+    }, {
       label: "Telefon Numarası:",
       name: "phone_number"
     }
-      //,  {
-      //  label: "Doğum Tarihi:",
-      //  name: "birth_date",
-      //  type: "date"
-      //}
+
     ]
   });
 
@@ -44,6 +44,7 @@ $(document).ready(function () {
       {"data": "mother_name"},
       {"data": "father_name"},
       {"data": "birthplace"},
+      {"data": "birth_date"},
       {"data": "phone_number"}
     ],
     tableTools: {
@@ -57,7 +58,7 @@ $(document).ready(function () {
           sExtends: "collection",
           sButtonText: "Save",
           sButtonClass: "save-collection",
-          aButtons: [ 'copy', 'csv', 'pdf' ]
+          aButtons: ['copy', 'csv', 'pdf']
         },
         'print'
       ]
