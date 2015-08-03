@@ -17,6 +17,7 @@ var firmsDb = require('./models/firms');
 var users = require('./routes/users');
 var products = require('./routes/products');
 var transportations = require('./routes/transportations');
+var transportationsDb = require('./models/transportations');
 var transportFees = require('./routes/transportFees');
 var wastageCosts = require('./routes/wastageCosts');
 
@@ -44,6 +45,7 @@ app.use('/firms', firms);
 app.use('/firms/api', firmsDb);
 app.use('/products', products);
 app.use('/transportations', transportations);
+app.use('/transportations/api', transportationsDb);
 app.use('/transport_fees', transportFees);
 app.use('/wastage_costs', wastageCosts);
 app.use('/users', users);

@@ -1,6 +1,6 @@
 $(document).ready(function() {
-  $('#example').DataTable({
-    "ajax": "data/tableData.json",
+  $('#transportations').DataTable({
+    "ajax": "transportations/api",
     dom: 'T<"clear">lfrtip',
     "scrollX": true,
     "columns": [
