@@ -17,17 +17,17 @@ $(document).ready(function () {
         name: "license_plate"
       }, {
         label: "Taşeron:",
-        name: "subcontractor",
+        name: "subcontractor_id",
         type: "select",
         options: data.subcontractorOptions
       }, {
         label: "Ruhsat Sahibi:",
-        name: "license_holder",
+        name: "license_holder_id",
         type: "select",
         options: data.licenseHolderOptions
       }, {
         label: "C2 Sahibi:",
-        name: "c2_holder",
+        name: "c2_holder_id",
         type: "select",
         options: data.c2HolderOptions
       }]
@@ -39,9 +39,9 @@ $(document).ready(function () {
       columns: [
         {"data": "type"},
         {"data": "license_plate"},
-        {"data": "subcontractor"},
-        {"data": "license_holder"},
-        {"data": "c2_holder"}
+        {"data": "subcontractor", editField: "subcontractor_id"},
+        {"data": "license_holder", editField: "license_holder_id"},
+        {"data": "c2_holder", editField: "c2_holder_id"}
       ],
       tableTools: {
         sRowSelect: "os",

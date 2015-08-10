@@ -80,8 +80,12 @@ router.get('/api', function (req, res) {
 router.post('/api', function (req, res) {
   var data = {
     type: req.body["data[type]"],
-    license_plate: req.body["data[license_plate]"]
+    license_plate: req.body["data[license_plate]"],
+    subcontractor: req.body["data[subcontractor_id]"],
+    license_holder: req.body["data[license_holder_id]"],
+    c2_holder: req.body["data[c2_holder_id]"]
   };
+  console.log(data);
   if (data.subcontractor_firm=='') data.subcontractor_firm = null;
   if (data.license_holder_firm=='') data.license_holder_firm = null;
   if (data.c2_holder_firm=='') data.c2_holder_firm = null;
@@ -90,7 +94,7 @@ router.post('/api', function (req, res) {
     pg.connect(connectionString, function (err, client, done) {
       //language=SQL
       var query = client.query('INSERT INTO vehicles(type, license_plate, subcontractor_firm, license_holder_firm, c2_holder_firm) VALUES($1, $2, $3, $4, $5) RETURNING *',
-        [data.type, data.license_plate, data.subcontractor_firm, data.license_holder_firm, data.c2_holder_firm]);
+        [data.type, data.license_plate, data.subcontractor, data.license_holder, data.c2_holder]);
       var result = {};
       query.on('row', function (row) {
         result = row;
@@ -150,7 +154,7 @@ router.post('/api', function (req, res) {
     pg.connect(connectionString, function (err, client, done) {
       //language=SQL
       var query = client.query('UPDATE vehicles SET type=($1), license_plate=($2), subcontractor_firm=($3), license_holder_firm=($4), c2_holder_firm=($5) WHERE id=($6) RETURNING *',
-        [data.type, data.license_plate, data.subcontractor_firm, data.license_holder_firm, data.c2_holder_firm, id]);
+        [data.type, data.license_plate, data.subcontractor, data.license_holder, data.c2_holder, id]);
       var result = {};
       query.on('row', function (row) {
         result = row;
