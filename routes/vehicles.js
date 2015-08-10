@@ -1,9 +1,10 @@
 var express = require('express');
 var router = express.Router();
 var pg = require('pg');
+//noinspection JSUnresolvedVariable
 var connectionString = process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/kacmaz';
 
-router.get('/', function (req, res, next) {
+router.get('/', function (req, res) {
   res.render('vehicles');
 });
 
@@ -15,26 +16,28 @@ router.get('/api/options', function (req, res) {
   options.licenseHolderOptions = [];
   options.c2HolderOptions = [];
 
-  pg.connect(connectionString, function(err, client, done){
+  pg.connect(connectionString, function (err, client, done) {
     //language=SQL
-    var subcontractorQuery = client.query('select name AS label, id AS value from firms where is_subcontractor = true');
-    subcontractorQuery.on('row', function(row) {
-      console.log(row);
-      options.subcontractorOptions.push(row);
+    var subcontractorQuery = client.query('SELECT name FROM firms WHERE is_subcontractor = TRUE');
+    subcontractorQuery.on('row', function (row) {
+      options.subcontractorOptions.push(row.name);
+      if (!options.subcontractorDef) options.subcontractorDef = row.name;
     });
-    subcontractorQuery.on('end', function() {
+    subcontractorQuery.on('end', function () {
       //language=SQL
-      var licenseHolderQuery = client.query('select name AS label, id AS value from firms where is_license_holder = true');
-      licenseHolderQuery.on('row', function(row) {
-        options.licenseHolderOptions.push(row);
+      var licenseHolderQuery = client.query('SELECT name FROM firms WHERE is_license_holder = TRUE');
+      licenseHolderQuery.on('row', function (row) {
+        options.licenseHolderOptions.push(row.name);
+        if (!options.licenseHolderDef) options.licenseHolderDef = row.name;
       });
-      licenseHolderQuery.on('end', function() {
+      licenseHolderQuery.on('end', function () {
         //language=SQL
-        var c2HolderQuery = client.query('select name AS label, id AS value from firms where is_c2_holder = true');
-        c2HolderQuery.on('row', function(row) {
-          options.c2HolderOptions.push(row);
+        var c2HolderQuery = client.query('SELECT name FROM firms WHERE is_c2_holder = TRUE');
+        c2HolderQuery.on('row', function (row) {
+          options.c2HolderOptions.push(row.name);
+          if (!options.c2HolderDef) options.c2HolderDef = row.name;
         });
-        c2HolderQuery.on('end', function() {
+        c2HolderQuery.on('end', function () {
           done();
           return res.json(options);
         });
@@ -54,11 +57,8 @@ router.get('/api', function (req, res) {
         vehicle.type,\
         vehicle.license_plate, \
         subcontractor.name AS subcontractor, \
-        subcontractor.id AS subcontractor_id, \
         license_holder.name AS license_holder, \
-        license_holder.id AS license_holder_id, \
-        c2_holder.name AS c2_holder,\
-        c2_holder.id AS c2_holder_id\
+        c2_holder.name AS c2_holder\
         FROM vehicles vehicle\
         LEFT JOIN firms subcontractor ON subcontractor.id = vehicle.subcontractor_firm\
         LEFT JOIN firms license_holder ON license_holder.id = vehicle.license_holder_firm\
@@ -77,23 +77,25 @@ router.get('/api', function (req, res) {
   });
 });
 
+//noinspection JSUnresolvedFunction
 router.post('/api', function (req, res) {
   var data = {
     type: req.body["data[type]"],
     license_plate: req.body["data[license_plate]"],
-    subcontractor: req.body["data[subcontractor_id]"],
-    license_holder: req.body["data[license_holder_id]"],
-    c2_holder: req.body["data[c2_holder_id]"]
+    subcontractor: req.body["data[subcontractor]"],
+    license_holder: req.body["data[license_holder]"],
+    c2_holder: req.body["data[c2_holder]"]
   };
-  console.log(data);
-  if (data.subcontractor_firm=='') data.subcontractor_firm = null;
-  if (data.license_holder_firm=='') data.license_holder_firm = null;
-  if (data.c2_holder_firm=='') data.c2_holder_firm = null;
   var action = req.body.action;
   if (action == 'create') {
     pg.connect(connectionString, function (err, client, done) {
       //language=SQL
-      var query = client.query('INSERT INTO vehicles(type, license_plate, subcontractor_firm, license_holder_firm, c2_holder_firm) VALUES($1, $2, $3, $4, $5) RETURNING *',
+      var query = client.query(
+        'INSERT INTO vehicles(type, license_plate, subcontractor_firm, license_holder_firm, c2_holder_firm) \
+           SELECT ($1), ($2), s.id, l.id, c.id \
+           FROM firms AS s, firms AS l, firms AS c \
+           WHERE s.name LIKE ($3) AND l.name LIKE ($4) AND c.name LIKE ($5) \
+         RETURNING *',
         [data.type, data.license_plate, data.subcontractor, data.license_holder, data.c2_holder]);
       var result = {};
       query.on('row', function (row) {
@@ -106,24 +108,21 @@ router.post('/api', function (req, res) {
             vehicle.type,\
             vehicle.license_plate, \
             subcontractor.name AS subcontractor, \
-            subcontractor.id AS subcontractor_id, \
             license_holder.name AS license_holder, \
-            license_holder.id AS license_holder_id, \
-            c2_holder.name AS c2_holder,\
-            c2_holder.id AS c2_holder_id\
+            c2_holder.name AS c2_holder\
             FROM vehicles vehicle\
             LEFT JOIN firms subcontractor ON subcontractor.id = vehicle.subcontractor_firm\
             LEFT JOIN firms license_holder ON license_holder.id = vehicle.license_holder_firm\
             LEFT JOIN firms c2_holder ON c2_holder.id = vehicle.c2_holder_firm\
             WHERE vehicle.id=($1)', [result.id]);
-        var rresult = {};
-        select.on('row', function(rrow) {
-          rrow.DT_RowId = rrow.id;
-          rresult = rrow;
+        var sResult = {};
+        select.on('row', function (sRow) {
+          sRow.DT_RowId = sRow.id;
+          sResult = sRow;
         });
-        select.on('end', function() {
+        select.on('end', function () {
           done();
-          return res.json(rresult);
+          return res.json(sResult);
         });
       });
       if (err) {
@@ -153,7 +152,19 @@ router.post('/api', function (req, res) {
     var id = req.body.id;
     pg.connect(connectionString, function (err, client, done) {
       //language=SQL
-      var query = client.query('UPDATE vehicles SET type=($1), license_plate=($2), subcontractor_firm=($3), license_holder_firm=($4), c2_holder_firm=($5) WHERE id=($6) RETURNING *',
+      var query = client.query('\
+        UPDATE vehicles AS v\
+        SET type = f.type,\
+        license_plate = f.license_plate,\
+        subcontractor_firm = f.sid, \
+        c2_holder_firm = f.cid, \
+        license_holder_firm = f.lid\
+        from (\
+          select ($1::TEXT) as type, ($2::TEXT) as license_plate, c.id as cid, l.id as lid, s.id as sid\
+          from firms as c, firms as l, firms as s\
+          where c.name like ($5) and l.name like ($4) and s.name like ($3)\
+        ) f\
+        where v.id = ($6);',
         [data.type, data.license_plate, data.subcontractor, data.license_holder, data.c2_holder, id]);
       var result = {};
       query.on('row', function (row) {
@@ -166,24 +177,21 @@ router.post('/api', function (req, res) {
             vehicle.type,\
             vehicle.license_plate, \
             subcontractor.name AS subcontractor, \
-            subcontractor.id AS subcontractor_id, \
             license_holder.name AS license_holder, \
-            license_holder.id AS license_holder_id, \
-            c2_holder.name AS c2_holder,\
-            c2_holder.id AS c2_holder_id\
+            c2_holder.name AS c2_holder\
             FROM vehicles vehicle\
             LEFT JOIN firms subcontractor ON subcontractor.id = vehicle.subcontractor_firm\
             LEFT JOIN firms license_holder ON license_holder.id = vehicle.license_holder_firm\
             LEFT JOIN firms c2_holder ON c2_holder.id = vehicle.c2_holder_firm\
             WHERE vehicle.id=($1)', [result.id]);
-        var rresult = {};
-        select.on('row', function(rrow) {
-          rrow.DT_RowId = rrow.id;
-          rresult = rrow;
+        var sResult = {};
+        select.on('row', function (sRow) {
+          sRow.DT_RowId = sRow.id;
+          sResult = sRow;
         });
-        select.on('end', function() {
+        select.on('end', function () {
           done();
-          return res.json(rresult);
+          return res.json(sResult);
         });
       });
       if (err) {
