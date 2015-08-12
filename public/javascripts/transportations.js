@@ -1,5 +1,8 @@
 $(document).ready(function() {
   $('#transportations').DataTable({
+    language: {
+      url: 'https://cdn.datatables.net/plug-ins/1.10.7/i18n/Turkish.json'
+    },
     "ajax": "transportations/api",
     dom: 'T<"clear">lfrtip',
     "scrollX": true,
