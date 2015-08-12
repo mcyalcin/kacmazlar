@@ -159,12 +159,12 @@ router.post('/api', function (req, res) {
         subcontractor_firm = f.sid, \
         c2_holder_firm = f.cid, \
         license_holder_firm = f.lid\
-        from (\
-          select ($1::TEXT) as type, ($2::TEXT) as license_plate, c.id as cid, l.id as lid, s.id as sid\
-          from firms as c, firms as l, firms as s\
-          where c.name like ($5) and l.name like ($4) and s.name like ($3)\
+        FROM (\
+          SELECT ($1::TEXT) AS type, ($2::TEXT) AS license_plate, c.id AS cid, l.id AS lid, s.id AS sid\
+          FROM firms AS c, firms AS l, firms AS s\
+          WHERE c.name LIKE ($5) AND l.name LIKE ($4) AND s.name LIKE ($3)\
         ) f\
-        where v.id = ($6);',
+        WHERE v.id = ($6);',
         [data.type, data.license_plate, data.subcontractor, data.license_holder, data.c2_holder, id]);
       var result = {};
       query.on('row', function (row) {

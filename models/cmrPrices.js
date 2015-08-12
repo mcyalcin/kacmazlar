@@ -3,29 +3,14 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 
-function formatDate(date) {
-  var monthNames = [
-    "Ocak", "Şubat", "Mart",
-    "Nisan", "Mayıs", "Haziran", "Temmuz",
-    "Ağustos", "Eylül", "Ekim",
-    "Kasım", "Aralık"
-  ];
-
-  var day = date.getDate();
-  var monthIndex = date.getMonth();
-  var year = date.getFullYear();
-
-  return day + ' ' + monthNames[monthIndex] + ' ' + year;
-}
-
 function getCmrPrices(res) {
   var results = [];
   pg.connect(connectionString, function (err, client, done) {
     var query = client.query('select * from cmr_prices order by id asc');
     query.on('row', function (row) {
       row.DT_RowId = row.id;
-      if (row.start_date) row.start_date = formatDate(new Date(row.start_date));
-      if (row.end_date) row.end_date = formatDate(new Date(row.end_date));
+      row.start_date = formatDate(row.start_date);
+      row.end_date = formatDate(row.end_date);
       results.push(row);
     });
     query.on('end', function () {
@@ -38,11 +23,23 @@ function getCmrPrices(res) {
   });
 }
 
+function formatDate(str) {
+  if (!str) return null;
+  var date = new Date(str);
+  return date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear();
+}
+
+function parseDate(str) {
+  if (!str) return null;
+  var split = str.split('.');
+  return new Date(split[2], split[1] - 1, split[0]);
+}
+
 router.post('/', function (req, res) {
   var data = {
     price: req.body["data[price]"],
-    start_date: req.body["data[start_date]"],
-    end_date: req.body["data[end_date]"]
+    start_date: parseDate(req.body["data[start_date]"]),
+    end_date: parseDate(req.body["data[end_date]"])
   };
   var action = req.body.action;
   if (action == 'create') {
@@ -61,8 +58,8 @@ router.post('/', function (req, res) {
       var result = {};
       query.on('row', function (row) {
         row.DT_RowId = row.id;
-        if (row.start_date) row.start_date = formatDate(new Date(row.start_date));
-        if (row.end_date) row.end_date = formatDate(new Date(row.end_date));
+        row.start_date = formatDate(row.start_date);
+        row.end_date = formatDate(row.end_date);
         result = row;
       });
       query.on('end', function () {
@@ -97,8 +94,8 @@ router.post('/', function (req, res) {
       var result = {};
       query.on('row', function (row) {
         row.DT_RowId = row.id;
-        if (row.start_date) row.start_date = formatDate(new Date(row.start_date));
-        if (row.end_date) row.end_date = formatDate(new Date(row.end_date));
+        row.start_date = formatDate(row.start_date);
+        row.end_date = formatDate(row.end_date);
         result = row;
       });
       query.on('end', function () {

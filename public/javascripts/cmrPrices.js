@@ -11,12 +11,14 @@ $(document).ready(function () {
       label: "Geçerlilik Başlangıcı:",
       name: "start_date",
       type:  "date",
-      def: function() { return new Date(); }
+      def: function() { return new Date(); },
+      dateFormat: 'd.m.yy'
     }, {
       label: "Geçerlilik Sonu:",
       name: "end_date",
       type:  "date",
-      def: function() { return new Date(); }
+      def: function() { return new Date(); },
+      dateFormat: 'd.m.yy'
     }]
   });
 

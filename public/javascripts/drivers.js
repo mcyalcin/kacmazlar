@@ -25,7 +25,8 @@ $(document).ready(function () {
     }, {
       label: "Doğum Tarihi:",
       name: "birth_date",
-      type: "date"
+      type: "date",
+      dateFormat: 'd.m.yy'
     }, {
       label: "Telefon Numarası:",
       name: "phone_number"
