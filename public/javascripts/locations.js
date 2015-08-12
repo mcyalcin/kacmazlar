@@ -62,11 +62,21 @@ $(document).ready(function () {
         {sExtends: "editor_remove", editor: editor},
         {
           sExtends: "collection",
-          sButtonText: "Save",
+          sButtonText: "Kaydet",
           sButtonClass: "save-collection",
-          aButtons: [ 'copy', 'csv', 'pdf' ]
+          aButtons: [
+            {
+              sExtends: 'copy',
+              sButtonText: 'Kopyala'
+            },
+            'csv',
+            'pdf'
+          ]
         },
-        'print'
+        {
+          sExtends: 'print',
+          sButtonText: 'Yazdır'
+        }
       ]
     }
   });
