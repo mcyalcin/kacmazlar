@@ -2,6 +2,30 @@ var editor;
 
 $(document).ready(function () {
   editor = new $.fn.dataTable.Editor({
+    i18n: {
+      create: {
+        button: "Yarat",
+        title:  "Yeni Kayıt Yarat",
+        submit: "Yarat"
+      },
+      edit: {
+        button: "Değiştir",
+        title:  "Kaydı Değiştir",
+        submit: "Değiştir"
+      },
+      remove: {
+        button: "Sil",
+        title:  "Sil",
+        submit: "Sil",
+        confirm: {
+          _: "%d kaydı silmek istediğinizden emin misiniz?",
+          1: "Kaydı silmek istediğinizden emin misiniz?"
+        }
+      },
+      error: {
+        system: "Bir hata oluştu, sistem yöneticisine başvurun."
+      }
+    },
     ajax: "products/api",
     table: "#products",
     fields: [{
@@ -11,6 +35,9 @@ $(document).ready(function () {
   });
 
   $('#products').dataTable({
+    language: {
+      url: 'https://cdn.datatables.net/plug-ins/1.10.7/i18n/Turkish.json'
+    },
     dom: "T<'clear'>lfrtip",
     ajax: "products/api",
     columns: [
