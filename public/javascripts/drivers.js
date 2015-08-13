@@ -60,6 +60,7 @@ $(document).ready(function () {
   });
 
   $('#drivers').dataTable({
+    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Tüm"]],
     language: {
       url: 'https://cdn.datatables.net/plug-ins/1.10.7/i18n/Turkish.json'
     },
