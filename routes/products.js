@@ -27,13 +27,16 @@ router.get('/api', function(req, res) {
 
 router.post('/api', function (req, res) {
   var data = {
-    name: req.body["data[name]"]
+    name: req.body["data[name]"],
+    allowed_waste: req.body["data[allowed_waste]"],
+    waste_unit_cost: req.body["data[waste_unit_cost]"]
   };
+  console.log('a '+data.waste_unit_cost);
   var action = req.body.action;
   if (action == 'create') {
     pg.connect(connectionString, function (err, client, done) {
-      var query = client.query('insert into products(name) values($1) returning *',
-        [data.name]);
+      var query = client.query('insert into products(name, allowed_waste, waste_unit_cost) values($1, $2, $3) returning *',
+        [data.name, data.allowed_waste, data.waste_unit_cost]);
       var result = {};
       query.on('row', function (row) {
         row.DT_RowId = row.id;
@@ -51,9 +54,9 @@ router.post('/api', function (req, res) {
     pg.connect(connectionString, function (err, client, done) {
       var query;
       if (typeof ids == 'string') {
-        query = client.query('delete from locations where id=($1)', [ids]);
+        query = client.query('delete from products where id=($1)', [ids]);
       } else {
-        query = client.query('delete from locations where id=any($1::int[])', [ids]);
+        query = client.query('delete from products where id=any($1::int[])', [ids]);
       }
       query.on('end', function () {
         client.end();
@@ -66,11 +69,12 @@ router.post('/api', function (req, res) {
   } else if (action == 'edit') {
     var id = req.body.id;
     pg.connect(connectionString, function (err, client, done) {
-      var query = client.query('update locations set name=($1) where id=($2) returning *',
-        [data.name]);
+      var query = client.query('update products set name=($1), allowed_waste=($2), waste_unit_cost=($3) where id=($4) returning *',
+        [data.name, data.allowed_waste, data.waste_unit_cost, id]);
       var result = {};
       query.on('row', function (row) {
         row.DT_RowId = row.id;
+        console.log(row.waste_unit_cost);
         result = row;
       });
       query.on('end', function () {

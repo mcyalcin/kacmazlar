@@ -31,6 +31,12 @@ $(document).ready(function () {
     fields: [{
       label: "Ürün Cinsi:",
       name: "name"
+    }, {
+      label: "Kabul Edilir Fire Oranı:",
+      name: "allowed_waste"
+    }, {
+      label: "Fire Cezası:",
+      name: "waste_unit_cost"
     }]
   });
 
@@ -42,7 +48,9 @@ $(document).ready(function () {
     dom: "T<'clear'>lfrtip",
     ajax: "products/api",
     columns: [
-      {"data": "name"}
+      {"data": "name"},
+      {"data": "allowed_waste"},
+      {"data": "waste_unit_cost"}
     ],
     tableTools: {
       sRowSelect: "os",
