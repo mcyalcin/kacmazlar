@@ -20,7 +20,7 @@ var vehicles = require('./routes/vehicles');
 var transportations = require('./routes/transportations');
 var transportationsDb = require('./models/transportations');
 var transportFees = require('./routes/transportFees');
-var wastageCosts = require('./routes/wastageCosts');
+var customsWastageCosts = require('./routes/customsWastageCosts');
 
 var app = express();
 
@@ -49,7 +49,7 @@ app.use('/vehicles', vehicles);
 app.use('/transportations', transportations);
 app.use('/transportations/api', transportationsDb);
 app.use('/transport_fees', transportFees);
-app.use('/wastage_costs', wastageCosts);
+app.use('/customs_wastage_costs', customsWastageCosts);
 app.use('/users', users);
 
 // catch 404 and forward to error handler
