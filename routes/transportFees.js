@@ -75,22 +75,23 @@ router.post('/api', function(req, res) {
   };
   var action = req.body.action;
   if (action == 'create') {
-    // language=SQL
-    var query = client.query(
-      'INSERT INTO transport_prices(product, "from", "to", unit_price)\
-         SELECT p.id, f.id, t.id, ($4)\
-         FROM products as p, locations as f, locations as t\
-         WHERE p.name like ($1), f.name like ($2), t.name like ($3)\
-       RETURNING *',
-      [data.product, data.from, data.to, data.unit_price]
-    );
-    var id;
-    query.on('row', function(row) {
-      id = row.id;
-    });
-    query.on('end', function() {
+    pg.connect(connectionString, function(err, client, done){
       // language=SQL
-      var select = client.query('SELECT \
+      var query = client.query(
+        'INSERT INTO transport_prices(product, "from", "to", unit_price)\
+           SELECT p.id, f.id, t.id, ($4)\
+           FROM products as p, locations as f, locations as t\
+           WHERE p.name like ($1) AND f.name like ($2) AND t.name like ($3)\
+         RETURNING id',
+        [data.product, data.from, data.to, data.unit_price]
+      );
+      var id;
+      query.on('row', function(row) {
+        id = row.id;
+      });
+      query.on('end', function() {
+        // language=SQL
+        var select = client.query('SELECT \
         p.name as product,\
         f.name as "from",\
         t.name as "to",\
@@ -101,14 +102,16 @@ router.post('/api', function(req, res) {
         LEFT JOIN locations t ON u.to = t.id\
         LEFT JOIN products p ON u.product = p.id\
         WHERE u.id = ($1)', [id]);
-      var result;
-      select.on('row', function(row) {
-        result = row;
+        var result;
+        select.on('row', function(row) {
+          result = row;
+        });
+        select.on('end', function() {
+          done();
+          return res.json(result);
+        });
       });
-      select.on('end', function() {
-        done();
-        return res.json(result);
-      });
+      if (err) console.log(err);
     });
   } else if (action == 'remove') {
     var ids = req.body['id[]'];
@@ -130,17 +133,18 @@ router.post('/api', function(req, res) {
       }
     });
   } else if (action == 'edit') {
-    var id = request.body.id;
-    // language=SQL
-    var query = client.query(
-      'UPDATE transport_prices SET product = f.pid, "from" = f.fid, "to" = f.tid, unit_price = ($4)\
-       FROM (SELECT p.id as pid, f.id as fid, t.id as tid FROM products as p, locations as f, locations as t WHERE p.name LIKE ($1) AND f.name LIKE ($2) AND t.name LIKE ($3)) f\
-       WHERE id = ($5)',
-      [data.product, data.from, data.to, data.unit_price, id]
-    );
-    query.on('end', function() {
+    var id = req.body.id;
+    pg.connect(connectionString, function(err, client, done) {
       // language=SQL
-      var select = client.query('SELECT \
+      var query = client.query(
+        'UPDATE transport_prices SET product = f.pid, "from" = f.fid, "to" = f.tid, unit_price = ($4)\
+         FROM (SELECT p.id as pid, f.id as fid, t.id as tid FROM products as p, locations as f, locations as t WHERE p.name LIKE ($1) AND f.name LIKE ($2) AND t.name LIKE ($3)) f\
+         WHERE id = ($5)',
+        [data.product, data.from, data.to, data.unit_price, id]
+      );
+      query.on('end', function() {
+        // language=SQL
+        var select = client.query('SELECT \
         p.name as product,\
         f.name as "from",\
         t.name as "to",\
@@ -151,14 +155,16 @@ router.post('/api', function(req, res) {
         LEFT JOIN locations t ON u.to = t.id\
         LEFT JOIN products p ON u.product = p.id\
         WHERE u.id = ($1)', [id]);
-      var result;
-      select.on('row', function(row) {
-        result = row;
+        var result;
+        select.on('row', function(row) {
+          result = row;
+        });
+        select.on('end', function() {
+          done();
+          return res.json(result);
+        });
       });
-      select.on('end', function() {
-        done();
-        return res.json(result);
-      });
+      if (err) console.log(err);
     });
   }
 });
