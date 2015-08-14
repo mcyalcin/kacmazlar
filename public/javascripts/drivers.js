@@ -59,6 +59,40 @@ $(document).ready(function () {
     ]
   });
 
+  function validateTckn(value) {
+    var n = value.split('');
+    var i, sum1 = 0, sum2 = 0, sum3 = parseInt(n[0]);
+    for(i=0; i < 10; i++) {
+      sum1 = sum1 + parseInt(n[i]);
+    }
+    for(i=1; i < 9; i = i + 2) {
+      sum2 = sum2 + parseInt(n[i]);
+      sum3 = sum3 + parseInt(n[i+1]);
+    }
+    return !(!/^[1-9][0-9]{10}$/.test(value) || (sum1 % 10 != n[10]) || (sum3 * 7 - sum2) % 10 != n[9]);
+  }
+
+  function validatePhoneNumber(value) {
+    return !value || value.toString().replace(/ /g,'').replace(/-/g,'').replace(/\(/g,'').replace(/\)/g,'').length === 10;
+  }
+
+  editor.on('preSubmit', function(e,o,action) {
+    var noError = true;
+    if (action !== 'remove') {
+      var idNumber = editor.field('id_number');
+      if (!validateTckn(idNumber.val())) {
+        idNumber.error('Geçersiz TCKN.');
+        noError = false;
+      }
+      var phoneNumber = editor.field('phone_number');
+      if (!validatePhoneNumber(phoneNumber.val())) {
+        phoneNumber.error('Geçersiz telefon numarası: Lütfen on rakamlı bir numara giriniz.');
+        noError = false;
+      }
+    }
+    return noError;
+  });
+
   $('#drivers').dataTable({
     lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Tüm"]],
     language: {
