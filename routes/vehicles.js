@@ -96,7 +96,8 @@ router.post('/api', function (req, res) {
            FROM firms AS s, firms AS l, firms AS c \
            WHERE s.name LIKE ($3) AND l.name LIKE ($4) AND c.name LIKE ($5) \
          RETURNING *',
-        [data.type, data.license_plate, data.subcontractor, data.license_holder, data.c2_holder]);
+        [data.type, data.license_plate, data.subcontractor, data.license_holder, data.c2_holder]
+      );
       var result = {};
       query.on('row', function (row) {
         result = row;

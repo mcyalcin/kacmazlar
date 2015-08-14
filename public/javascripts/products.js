@@ -35,7 +35,7 @@ $(document).ready(function () {
       label: "Kabul Edilir Fire Oranı:",
       name: "allowed_waste"
     }, {
-      label: "Fire Cezası:",
+      label: "Fire Cezası Birim Fiyatı:",
       name: "waste_unit_cost"
     }]
   });

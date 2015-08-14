@@ -1,7 +1,7 @@
 var editor;
 
 $(document).ready(function () {
-  $.getJSON('vehicles/api/options', function(data) {
+  $.getJSON('transport_fees/api/options', function(data) {
     editor = new $.fn.dataTable.Editor({
       i18n: {
         create: {
@@ -27,51 +27,44 @@ $(document).ready(function () {
           system: "Bir hata oluştu, sistem yöneticisine başvurun."
         }
       },
-      ajax: "vehicles/api",
-      table: "#vehicles",
+      ajax: "transport_fees/api",
+      table: "#transport_fees",
       fields: [{
-        label: "Araç Türü:",
-        name: "type",
+        label: "Ürün Cinsi:",
+        name: "product",
         type: "select",
-        options: data.typeOptions,
-        def: "Çekici"
+        options: data.productOptions,
+        def: data.productDef
       }, {
-        label: "Plaka:",
-        name: "license_plate"
-      }, {
-        label: "Taşeron:",
-        name: "subcontractor",
+        label: "Nereden:",
+        name: "from",
         type: "select",
-        options: data.subcontractorOptions,
-        def: data.subcontractorDef
+        options: data.locationOptions,
+        def: data.locationDef
       }, {
-        label: "Ruhsat Sahibi:",
-        name: "license_holder",
+        label: "Nereye:",
+        name: "to",
         type: "select",
-        options: data.licenseHolderOptions,
-        def: data.licenseHolderDef
+        options: data.locationOptions,
+        def: data.locationDef
       }, {
-        label: "C2 Sahibi:",
-        name: "c2_holder",
-        type: "select",
-        options: data.c2HolderOptions,
-        def: data.c2HolderDef
+        label: "Birim Fiyatı:",
+        name: "unit_price"
       }]
     });
 
-    $('#vehicles').dataTable({
+    $('#transport_fees').dataTable({
       lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Tüm"]],
       language: {
         url: 'https://cdn.datatables.net/plug-ins/1.10.7/i18n/Turkish.json'
       },
       dom: "T<'clear'>lfrtip",
-      ajax: "vehicles/api",
+      ajax: "transport_fees/api",
       columns: [
-        {"data": "type"},
-        {"data": "license_plate"},
-        {"data": "subcontractor"},
-        {"data": "license_holder"},
-        {"data": "c2_holder"}
+        {"data": "product"},
+        {"data": "from"},
+        {"data": "to"},
+        {"data": "unit_price"}
       ],
       tableTools: {
         sRowSelect: "os",
