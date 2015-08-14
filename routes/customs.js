@@ -16,6 +16,7 @@ router.get('/api/options', function (req, res) {
     var productsQuery = client.query('SELECT name FROM products');
     productsQuery.on('row', function (row) {
       options.productOptions.push(row.name);
+      if (!options.productDef) options.productDef = row.name;
     });
     productsQuery.on('end', function () {
       done();
