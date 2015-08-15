@@ -6,7 +6,13 @@ var pg = require('pg');
 function getCmrPrices(res) {
   var results = [];
   pg.connect(connectionString, function (err, client, done) {
-    var query = client.query('select * from cmr_prices order by id asc');
+    // language=SQL
+    var query = client.query(
+      'SELECT c.id, p.name AS product, c.price, c.start_date, c.end_date\
+       FROM cmr_prices c\
+       LEFT JOIN products p ON c.product = p.id\
+       ORDER BY id ASC'
+    );
     query.on('row', function (row) {
       row.DT_RowId = row.id;
       row.start_date = formatDate(row.start_date);
@@ -37,6 +43,7 @@ function parseDate(str) {
 
 router.post('/', function (req, res) {
   var data = {
+    product: req.body["data[product]"],
     price: req.body["data[price]"],
     start_date: parseDate(req.body["data[start_date]"]),
     end_date: parseDate(req.body["data[end_date]"])
@@ -44,26 +51,37 @@ router.post('/', function (req, res) {
   var action = req.body.action;
   if (action == 'create') {
     pg.connect(connectionString, function (err, client, done) {
-      var query;
-      if (data.start_date)
-        if (data.end_date)
-          query = client.query('insert into cmr_prices(price, start_date, end_date) values($1, $2, $3) returning *',
-            [data.price, data.start_date, data.end_date]);
-        else
-          query = client.query('insert into cmr_prices(price, start_date) values($1, $2) returning *',
-            [data.price, data.start_date]);
-      else
-        query = client.query('insert into cmr_prices(price) values($1) returning *',
-          [data.price]);
-      var result = {};
+      // language=SQL
+      var query = client.query(
+        'INSERT INTO cmr_prices(product, price, start_date, end_date) \
+           SELECT p.id, ($1), ($2), ($3) \
+           FROM products p \
+           WHERE p.name LIKE ($4) \
+         RETURNING id',
+        [data.price, data.start_date, data.end_date, data.product]);
+      var id;
       query.on('row', function (row) {
-        row.DT_RowId = row.id;
-        row.start_date = formatDate(row.start_date);
-        row.end_date = formatDate(row.end_date);
-        result = row;
+        id = row.id;
       });
       query.on('end', function () {
-        res.json({row: result});
+        // language=SQL
+        var select = client.query(
+          'SELECT c.id, p.name AS product, c.price, c.start_date, c.end_date\
+           FROM cmr_prices c\
+           LEFT JOIN products p ON c.product = p.id\
+           WHERE c.id = ($1)', [id]
+        );
+        var result;
+        select.on('row', function (row) {
+          row.DT_RowId = row.id;
+          row.start_date = formatDate(row.start_date);
+          row.end_date = formatDate(row.end_date);
+          result = row;
+        });
+        select.on('end', function () {
+          done();
+          res.json({row: result});
+        });
       });
       if (err) {
         console.log(err);
@@ -89,17 +107,31 @@ router.post('/', function (req, res) {
   } else if (action == 'edit') {
     var id = req.body.id;
     pg.connect(connectionString, function (err, client, done) {
-      var query = client.query('update cmr_prices set price=($1), start_date=($2), end_date=($3) where id=($4) returning *',
-        [data.price, data.start_date, data.end_date, id]);
-      var result = {};
-      query.on('row', function (row) {
-        row.DT_RowId = row.id;
-        row.start_date = formatDate(row.start_date);
-        row.end_date = formatDate(row.end_date);
-        result = row;
-      });
+      // language=SQL
+      var query = client.query(
+        'UPDATE cmr_prices as c SET product = s.id, price=($1), start_date=($2), end_date=($3) \
+         FROM (SELECT p.id FROM products as p WHERE name LIKE ($4)) s\
+         WHERE c.id=($5) RETURNING *',
+        [data.price, data.start_date, data.end_date, data.product, id]);
       query.on('end', function () {
-        res.json({row: result});
+        // language=SQL
+        var select = client.query(
+          'SELECT c.id, p.name AS product, c.price, c.start_date, c.end_date\
+           FROM cmr_prices c\
+           LEFT JOIN products p ON c.product = p.id\
+           WHERE c.id = ($1)', [id]
+        );
+        var result;
+        select.on('row', function (row) {
+          row.DT_RowId = row.id;
+          row.start_date = formatDate(row.start_date);
+          row.end_date = formatDate(row.end_date);
+          result = row;
+        });
+        select.on('end', function () {
+          done();
+          res.json({row: result});
+        });
       });
       if (err) {
         console.log(err);
@@ -110,6 +142,26 @@ router.post('/', function (req, res) {
 
 router.get('/', function (req, res) {
   getCmrPrices(res);
+});
+
+router.get('/options', function (req, res) {
+  var options = {};
+  options.productOptions = [];
+  pg.connect(connectionString, function (err, client, done) {
+    // language=SQL
+    var productsQuery = client.query('SELECT name FROM products');
+    productsQuery.on('row', function (row) {
+      options.productOptions.push(row.name);
+      if (!options.productDef) options.productDef = row.name;
+    });
+    productsQuery.on('end', function () {
+      done();
+      return res.json(options);
+    });
+    if (err) {
+      console.log(err);
+    }
+  });
 });
 
 module.exports = router;
