@@ -77,11 +77,22 @@ router.get('/api', function (req, res) {
   });
 });
 
+function formatLicensePlate(value) {
+  var s = value.toString().replace(/ /g, '');
+  if (!isNaN(parseInt(s.charAt(3)))) {
+    return s.substr(0,2) + ' ' + s.substr(2,1).toUpperCase() + ' ' + s.substr(3);
+  } else if (!isNaN(parseInt(s.charAt(4)))) {
+    return s.substr(0,2) + ' ' + s.substr(2,2).toUpperCase() + ' ' + s.substr(4);
+  } else {
+    return s.substr(0,2) + ' ' + s.substr(2,3).toUpperCase() + ' ' + s.substr(5);
+  }
+}
+
 //noinspection JSUnresolvedFunction
 router.post('/api', function (req, res) {
   var data = {
     type: req.body["data[type]"],
-    license_plate: req.body["data[license_plate]"],
+    license_plate: formatLicensePlate(req.body["data[license_plate]"]),
     subcontractor: req.body["data[subcontractor]"],
     license_holder: req.body["data[license_holder]"],
     c2_holder: req.body["data[c2_holder]"]

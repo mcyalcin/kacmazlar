@@ -59,6 +59,27 @@ $(document).ready(function () {
       }]
     });
 
+    function validateLicensePlate(value) {
+      var f1 = /^[0-9]{2}[a-zA-Z][0-9]{4}$/;
+      var f2 = /^[0-9]{2}[a-zA-Z]{2}[0-9]{3}$/;
+      var f3 = /^[0-9]{2}[a-zA-Z]{2}[0-9]{4}$/;
+      var f4 = /^[0-9]{2}[a-zA-Z]{3}[0-9]{2}$/;
+      var s = value.toString().replace(/ /g, '');
+      return f1.test(s) || f2.test(s) || f3.test(s) || f4.test(s);
+    }
+
+    editor.on('preSubmit', function(e, o, action) {
+      var noError = true;
+      if (action != 'remove') {
+        var licensePlate = editor.field('license_plate');
+        if (!validateLicensePlate(licensePlate.val())) {
+          licensePlate.error('Geçersiz plaka.');
+          noError = false;
+        } 
+      }
+      return noError;
+    });
+
     $('#vehicles').dataTable({
       lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Tüm"]],
       language: {
