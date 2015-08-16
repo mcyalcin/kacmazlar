@@ -44,7 +44,7 @@ $(document).ready(function () {
   });
 
   $('#locations').dataTable({
-    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Tüm"]],
+    paging: false,
     language: {
       url: 'https://cdn.datatables.net/plug-ins/1.10.7/i18n/Turkish.json'
     },
