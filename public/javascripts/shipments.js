@@ -30,25 +30,25 @@ $(document).ready(function () {
       // TODO: Field names are to be changed
       fields: [{
         label: 'CMR Numarasi:',
-        name: 'cmr_no'
+        name: 'cmr_number'
       }, {
         label: 'CMR Tarihi:',
-        name: 'cmr_tarihi',
+        name: 'cmr_date',
         type: 'date',
         dateFormat: 'd.m.yy'
       }, {
         label: 'Yükleme Tarihi:',
-        name: 'yukleme_tarihi',
+        name: 'loading_date',
         type: 'date',
         dateFormat: 'd.m.yy'
       }, {
         label: 'Boşaltma Tarihi:',
-        name: 'bosaltma_tarihi',
+        name: 'delivery_date',
         type: 'date',
         dateFormat: 'd.m.yy'
       }, {
         label: 'Çekici Plakası:',
-        name: 'cekici_plakasi',
+        name: 'tractor_plate_number',
         type: 'select',
         options: data.tractorPlateOptions
       }, {
@@ -58,12 +58,12 @@ $(document).ready(function () {
         options: data.trailerPlateOptions
       }, {
         label: 'Şöför:',
-        name: 'sofor_adi_soyadi',
+        name: 'driver',
         type: 'select',
         options: data.driverOptions
       }, {
         label: 'Yukleme Yeri',
-        name: 'yukleme_yeri',
+        name: 'loading_location',
         type: 'select',
         options: data.locationOptions
       }, {
@@ -73,21 +73,21 @@ $(document).ready(function () {
         options: data.locationOptions
       }, {
         label: 'Urun Cinsi:',
-        name: 'urun_cinsi',
+        name: 'product',
         type: 'select',
         options: data.productOptions
       }, {
         label: 'Yukleme Tonaji',
-        name: 'yukleme_tonaji'
+        name: 'loading_weight'
       }, {
         label: 'Gumruk Tonaji',
-        name: 'gumruk_tonaji'
+        name: 'customs_weight'
       }, {
         label: 'Bosaltim Tonaji',
-        name: 'bosaltim_tonaji'
+        name: 'delivery_weight'
       }, {
         label: 'Hakedis Tarihi:',
-        name: 'hakedis_tarihi',
+        name: 'payment_date',
         type: 'date',
         dateFormat: 'd.m.yy'
       }]
@@ -106,32 +106,33 @@ $(document).ready(function () {
       dom: 'T<"clear">lfrtip',
       "scrollX": true,
       "columns": [
-        {"data": "yukleme_tarihi"},
-        {"data": "bosaltma_tarihi"},
-        {"data": "firma_adi"},
-        {"data": "cekici_plakasi"},
-        {"data": "dorse_plakasi"},
-        {"data": "sofor_adi_soyadi"},
-        {"data": "yukleme_yeri"},
-        {"data": "bosaltim_yeri"},
-        {"data": "cmr_tarihi"},
-        {"data": "cmr_no"},
-        {"data": "urun_cinsi"},
-        {"data": "yukleme_tonaji"},
-        {"data": "gumruk_tonaji"},
-        {"data": "bosaltim_tonaji"},
-        {"data": "fire_hakki"},
-        {"data": "gumruk_firesi"},
-        {"data": "urun_firesi"},
-        {"data": "gumruk_fire_fiyati"},
-        {"data": "urun_fire_fiyati"},
-        {"data": "gumruk_cezasi"},
-        {"data": "urun_cezasi"},
-        {"data": "cmr_bedeli"},
-        {"data": "nakliye_fiyati"},
-        {"data": "nakliye_tutari"},
-        {"data": "net_hakedis_tutari"},
-        {"data": "hakedis_tarihi"}
+        {"data": "loading_date"},
+        {"data": "delivery_date"},
+        {"data": "company_name"},
+        {"data": "tractor_plate_number"},
+        {"data": "trailer_plate_number"},
+        {"data": "driver"},
+        {"data": "loading_location"},
+        {"data": "delivery_location"},
+        {"data": "cmr_date"},
+        {"data": "cmr_number"},
+        {"data": "product"},
+        {"data": "loading_weight"},
+        {"data": "customs_weight"},
+        {"data": "delivery_weight"},
+        {"data": "allowed_loss_rate"},
+        //{"data": "customs_allowed_loss_amount"},
+        {"data": "customs_loss"},
+        {"data": "delivery_loss"},
+        {"data": "customs_loss_unit_price"},
+        {"data": "delivery_loss_unit_price"},
+        {"data": "customs_loss_price"},
+        {"data": "delivery_loss_price"},
+        {"data": "cmr_price"},
+        {"data": "shipping_unit_price"},
+        {"data": "shipping_price"},
+        {"data": "net_price"},
+        {"data": "payment_date"}
       ],
       tableTools: {
         sRowSelect: "os",
