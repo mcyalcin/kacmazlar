@@ -96,8 +96,9 @@ router.post('/', function (req, res) {
     });
   } else if (action == 'edit') {
     var id = req.body.id;
-    pg.connect(connectionString, function (err, client, done) {
-      var query = client.query('update firms set name=($1), address=($2), phone_number=($3), is_c2_holder=($4), is_license_holder=($5), is_subcontractor=($6) where id=($7) returning *',
+    pg.connect(connectionString, function (err, client) {
+      // language=SQL
+      var query = client.query('UPDATE firms SET name=($1), address=($2), phone_number=($3), is_c2_holder=($4), is_license_holder=($5), is_subcontractor=($6) WHERE id=($7) RETURNING *',
         [data.name, data.address, data.phone_number, data.is_c2_holder, data.is_license_holder, data.is_subcontractor, id]);
       var result = {};
       query.on('row', function (row) {

@@ -53,7 +53,7 @@ $(document).ready(function () {
         options: data.tractorPlateOptions
       }, {
         label: 'Dorse Plakası:',
-        name: 'dorse_plakasi',
+        name: 'trailer_plate_number',
         type: 'select',
         options: data.trailerPlateOptions
       }, {
@@ -93,9 +93,9 @@ $(document).ready(function () {
       }]
     });
 
-    $('#shipments').on('click', 'tbody td:not(:first-child)', function (e) {
-      editor.inline(this);
-    });
+    //$('#shipments').on('click', 'tbody td:not(:first-child)', function (e) {
+    //  editor.inline(this);
+    //});
 
     $('#shipments').DataTable({
       paging: false,
@@ -106,33 +106,33 @@ $(document).ready(function () {
       dom: 'T<"clear">lfrtip',
       "scrollX": true,
       "columns": [
-        {"data": "loading_date"},
-        {"data": "delivery_date"},
-        {"data": "company_name"},
-        {"data": "tractor_plate_number"},
-        {"data": "trailer_plate_number"},
-        {"data": "driver"},
-        {"data": "loading_location"},
-        {"data": "delivery_location"},
-        {"data": "cmr_date"},
-        {"data": "cmr_number"},
-        {"data": "product"},
-        {"data": "loading_weight"},
-        {"data": "customs_weight"},
-        {"data": "delivery_weight"},
-        {"data": "allowed_loss_rate"},
+        {"data": "loading_date", defaultContent:""},
+        {"data": "delivery_date", defaultContent:""},
+        {"data": "company_name", defaultContent:""},
+        {"data": "tractor_plate_number", defaultContent:""},
+        {"data": "trailer_plate_number", defaultContent:""},
+        {"data": "driver", defaultContent:""},
+        {"data": "loading_location", defaultContent:""},
+        {"data": "delivery_location", defaultContent:""},
+        {"data": "cmr_date", defaultContent:""},
+        {"data": "cmr_number", defaultContent:""},
+        {"data": "product", defaultContent:""},
+        {"data": "loading_weight", defaultContent:""},
+        {"data": "customs_weight", defaultContent:""},
+        {"data": "delivery_weight", defaultContent:""},
+        {"data": "allowed_loss_rate", defaultContent:""},
         //{"data": "customs_allowed_loss_amount"},
-        {"data": "customs_loss"},
-        {"data": "delivery_loss"},
-        {"data": "customs_loss_unit_price"},
-        {"data": "delivery_loss_unit_price"},
-        {"data": "customs_loss_price"},
-        {"data": "delivery_loss_price"},
-        {"data": "cmr_price"},
-        {"data": "shipping_unit_price"},
-        {"data": "shipping_price"},
-        {"data": "net_price"},
-        {"data": "payment_date"}
+        {"data": "customs_loss", defaultContent:""},
+        {"data": "delivery_loss", defaultContent:""},
+        {"data": "customs_loss_unit_price", defaultContent:""},
+        {"data": "delivery_loss_unit_price", defaultContent:""},
+        {"data": "customs_loss_price", defaultContent:""},
+        {"data": "delivery_loss_price", defaultContent:""},
+        {"data": "cmr_price", defaultContent:""},
+        {"data": "shipping_unit_price", defaultContent:""},
+        {"data": "shipping_price", defaultContent:""},
+        {"data": "net_price", defaultContent:""},
+        {"data": "payment_date", defaultContent:""}
       ],
       tableTools: {
         sRowSelect: "os",
