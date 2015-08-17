@@ -20,7 +20,7 @@ function getCmrPrices(res) {
       results.push(row);
     });
     query.on('end', function () {
-      client.end();
+      done();
       return res.json({data: results});
     });
     if (err) {
@@ -92,12 +92,14 @@ router.post('/', function (req, res) {
     pg.connect(connectionString, function (err, client, done) {
       var query;
       if (typeof ids == 'string') {
-        query = client.query('delete from cmr_prices where id=($1)', [ids]);
+        // language=SQL
+        query = client.query('DELETE FROM cmr_prices WHERE id=($1)', [ids]);
       } else {
-        query = client.query('delete from cmr_prices where id=any($1::int[])', [ids]);
+        // language=SQL
+        query = client.query('DELETE FROM cmr_prices WHERE id=ANY($1::INT[])', [ids]);
       }
       query.on('end', function () {
-        client.end();
+        done();
         res.json({});
       });
       if (err) {
@@ -109,8 +111,8 @@ router.post('/', function (req, res) {
     pg.connect(connectionString, function (err, client, done) {
       // language=SQL
       var query = client.query(
-        'UPDATE cmr_prices as c SET product = s.id, price=($1), start_date=($2), end_date=($3) \
-         FROM (SELECT p.id FROM products as p WHERE name LIKE ($4)) s\
+        'UPDATE cmr_prices AS c SET product = s.id, price=($1), start_date=($2), end_date=($3) \
+         FROM (SELECT p.id FROM products AS p WHERE name LIKE ($4)) s\
          WHERE c.id=($5) RETURNING *',
         [data.price, data.start_date, data.end_date, data.product, id]);
       query.on('end', function () {
