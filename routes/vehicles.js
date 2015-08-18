@@ -90,15 +90,15 @@ function formatLicensePlate(value) {
 
 //noinspection JSUnresolvedFunction
 router.post('/api', function (req, res) {
-  var data = {
-    type: req.body["data[type]"],
-    license_plate: formatLicensePlate(req.body["data[license_plate]"]),
-    subcontractor: req.body["data[subcontractor]"],
-    license_holder: req.body["data[license_holder]"],
-    c2_holder: req.body["data[c2_holder]"]
-  };
   var action = req.body.action;
-  if (action == 'create') {
+  if (action === 'create') {
+    var data = {
+      type: req.body["data[type]"],
+      license_plate: formatLicensePlate(req.body["data[license_plate]"]),
+      subcontractor: req.body["data[subcontractor]"],
+      license_holder: req.body["data[license_holder]"],
+      c2_holder: req.body["data[c2_holder]"]
+    };
     pg.connect(connectionString, function (err, client, done) {
       //language=SQL
       var query = client.query(
@@ -141,7 +141,7 @@ router.post('/api', function (req, res) {
         console.log(err);
       }
     });
-  } else if (action == 'remove') {
+  } else if (action === 'remove') {
     var ids = req.body['id[]'];
     pg.connect(connectionString, function (err, client, done) {
       var query;
@@ -160,7 +160,14 @@ router.post('/api', function (req, res) {
         console.log(err);
       }
     });
-  } else if (action == 'edit') {
+  } else if (action === 'edit') {
+    var data = {
+      type: req.body["data[type]"],
+      license_plate: formatLicensePlate(req.body["data[license_plate]"]),
+      subcontractor: req.body["data[subcontractor]"],
+      license_holder: req.body["data[license_holder]"],
+      c2_holder: req.body["data[c2_holder]"]
+    };
     var id = req.body.id;
     pg.connect(connectionString, function (err, client, done) {
       //language=SQL
