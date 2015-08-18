@@ -93,6 +93,7 @@ $(document).ready(function () {
       }]
     });
 
+    // TODO: Consider adding inline editing.
     //$('#shipments').on('click', 'tbody td:not(:first-child)', function (e) {
     //  editor.inline(this);
     //});

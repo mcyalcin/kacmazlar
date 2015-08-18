@@ -119,10 +119,10 @@ router.post('/api', function(req, res) {
       var query;
       if (typeof ids == 'string') {
         //language=SQL
-        query = client.query('DELETE FROM vehicles WHERE id=($1)', [ids]);
+        query = client.query('DELETE FROM transport_prices WHERE id=($1)', [ids]);
       } else {
         //language=SQL
-        query = client.query('DELETE FROM vehicles WHERE id=ANY($1::INT[])', [ids]);
+        query = client.query('DELETE FROM transport_prices WHERE id=ANY($1::INT[])', [ids]);
       }
       query.on('end', function () {
         done();
