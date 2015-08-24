@@ -20,6 +20,7 @@ var vehicles = require('./routes/vehicles');
 var shipments = require('./routes/shipments');
 var transportFees = require('./routes/transportFees');
 var customs = require('./routes/customs');
+var login = require('./routes/login');
 
 var app = express();
 
@@ -49,6 +50,7 @@ app.use('/shipments', shipments);
 app.use('/transport_fees', transportFees);
 app.use('/customs', customs);
 app.use('/users', users);
+app.use('/login', login);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
