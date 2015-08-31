@@ -5,15 +5,15 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var routes = require('./routes/index');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var flash = require('connect-flash');
+
+//var routes = require('./routes/index');
 var drivers = require('./routes/drivers');
-var driversDb = require('./models/drivers');
 var locations = require('./routes/locations');
-var locationsDb = require('./models/locations');
 var cmrPrices = require('./routes/cmrPrices');
-var cmrPricesDb = require('./models/cmrPrices');
 var firms = require('./routes/firms');
-var firmsDb = require('./models/firms');
 var users = require('./routes/users');
 var products = require('./routes/products');
 var vehicles = require('./routes/vehicles');
@@ -35,15 +35,29 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
+app.use(require('express-session')({
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: false
+}));
+require('./config/passport')(passport);
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+//
+//var Account = require('./models/account');
+//passport.use(new LocalStrategy(Account.authenticate()));
+//passport.serializeUser(Account.serializeUser());
+//passport.deserializeUser(Account.deserializeUser());
+//
+//mongoose.connect('mongodb://localhost/passport_local_mongoose_express4');
+
+require('./routes/index')(app, passport);
+//app.use('/', routes);
 app.use('/drivers', drivers);
-app.use('/drivers/api', driversDb);
 app.use('/locations', locations);
-app.use('/locations/api', locationsDb);
 app.use('/cmr_prices', cmrPrices);
-app.use('/cmr_prices/api', cmrPricesDb);
 app.use('/firms', firms);
-app.use('/firms/api', firmsDb);
 app.use('/products', products);
 app.use('/vehicles', vehicles);
 app.use('/shipments', shipments);

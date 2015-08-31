@@ -5,7 +5,11 @@ var pg = require('pg');
 var connectionString = process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/kacmaz';
 
 router.get('/', function (req, res) {
-  res.render('customs');
+  if (typeof req.user == 'undefined') {
+    res.render('login');
+  } else {
+    res.render('customs', {user: req.user});
+  }
 });
 
 router.get('/api/options', function (req, res) {

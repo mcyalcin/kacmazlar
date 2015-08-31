@@ -23,7 +23,11 @@
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li class="navbar-right">
+        <%if (typeof user == 'undefined') {%>
         <a href="/login"><span class="glyphicon glyphicon-user"></span> Kullanıcı Girişi</a>
+        <%} else {%>
+        <a href="/login"><span class="glyphicon glyphicon-user"></span> <%= user.username %></a>
+        <%}%>
       </li>
     </ul>
   </div>
