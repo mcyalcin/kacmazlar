@@ -10,6 +10,7 @@ module.exports = function (passport) {
   passport.deserializeUser(function (id, done) {
     console.log('des ' + id);
     if (id == 1) return done(null, {username: 'admin', id: 1});
+    else if (id == 2) return done(null, {username: 'user', id: 2});
     //User.findById(id, function (err, user) {
     //  done(err, user);
     //});
@@ -21,11 +22,8 @@ module.exports = function (passport) {
         passReqToCallback: true
       },
       function (req, email, password, done) {
-        console.log('bla');
-        console.log(email);
-        console.log(password);
-
         if (email == 'admin' && password == 'admin') return done(null, {username: 'admin', id: 1});
+        else if (email == 'user' && password == 'user') return done(null, {username: 'user', id: 2});
         else return done(null, false, req.flash('loginMessage', 'Geçersiz kullanıcı adı veya şifre.'));
         //User.findOne({'local.email': email}, function(err, user) {
         //  if (err) {

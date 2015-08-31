@@ -2,7 +2,7 @@ module.exports = function (app, passport) {
 
   app.get('/', function (req, res) {
     if (typeof req.user == 'undefined') {
-      res.render('login');
+      res.render('login', { message: req.flash('loginMessage') });
     } else {
       res.render('index', {user: req.user});
     }

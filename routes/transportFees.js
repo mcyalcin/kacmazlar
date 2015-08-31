@@ -8,7 +8,7 @@ router.get('/', function(req, res) {
   if (typeof req.user == 'undefined') {
     res.render('login');
   } else {
-    res.render('transportFees', req.user);
+    res.render('transportFees', {user: req.user});
   }
 });
 

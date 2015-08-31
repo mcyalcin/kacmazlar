@@ -11,6 +11,9 @@
 
   <h1><span class="fa fa-sign-in"></span> Kullanıcı Girişi</h1>
 
+    <% if (typeof message != 'undefined' && message.length > 0) { %>
+    <div class="alert alert-danger"><%= message %></div>
+    <% } %>
     <form action="/login" method="post">
       <div class="form-group">
         <label>Kullanıcı Adı</label>
