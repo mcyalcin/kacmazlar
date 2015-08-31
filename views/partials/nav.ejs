@@ -26,7 +26,7 @@
         <%if (typeof user == 'undefined') {%>
         <a href="/login"><span class="glyphicon glyphicon-user"></span> Kullanıcı Girişi</a>
         <%} else {%>
-        <a href="/login"><span class="glyphicon glyphicon-user"></span> <%= user.username %></a>
+        <a href="/logout"><span class="glyphicon glyphicon-user"></span> <%= user.username %></a>
         <%}%>
       </li>
     </ul>
