@@ -5,17 +5,17 @@ $(document).ready(function () {
     i18n: {
       create: {
         button: "Yarat",
-        title:  "Yeni Kayıt Yarat",
+        title: "Yeni Kayıt Yarat",
         submit: "Yarat"
       },
       edit: {
         button: "Değiştir",
-        title:  "Kaydı Değiştir",
+        title: "Kaydı Değiştir",
         submit: "Değiştir"
       },
       remove: {
         button: "Sil",
-        title:  "Sil",
+        title: "Sil",
         submit: "Sil",
         confirm: {
           _: "%d kaydı silmek istediğinizden emin misiniz?",
@@ -62,21 +62,21 @@ $(document).ready(function () {
   function validateTckn(value) {
     var n = value.split('');
     var i, sum1 = 0, sum2 = 0, sum3 = parseInt(n[0]);
-    for(i=0; i < 10; i++) {
+    for (i = 0; i < 10; i++) {
       sum1 = sum1 + parseInt(n[i]);
     }
-    for(i=1; i < 9; i = i + 2) {
+    for (i = 1; i < 9; i = i + 2) {
       sum2 = sum2 + parseInt(n[i]);
-      sum3 = sum3 + parseInt(n[i+1]);
+      sum3 = sum3 + parseInt(n[i + 1]);
     }
     return !(!/^[1-9][0-9]{10}$/.test(value) || (sum1 % 10 != n[10]) || (sum3 * 7 - sum2) % 10 != n[9]);
   }
 
   function validatePhoneNumber(value) {
-    return !value || value.toString().replace(/ /g,'').replace(/-/g,'').replace(/\(/g,'').replace(/\)/g,'').length === 10;
+    return !value || value.toString().replace(/ /g, '').replace(/-/g, '').replace(/\(/g, '').replace(/\)/g, '').length === 10;
   }
 
-  editor.on('preSubmit', function(e,o,action) {
+  editor.on('preSubmit', function (e, o, action) {
     var noError = true;
     if (action !== 'remove') {
       var idNumber = editor.field('id_number');
@@ -88,6 +88,16 @@ $(document).ready(function () {
       if (!validatePhoneNumber(phoneNumber.val())) {
         phoneNumber.error('Geçersiz telefon numarası: Lütfen on rakamlı bir numara giriniz.');
         noError = false;
+      }
+      var data = $('#drivers').dataTable().fnGetData();
+      for (var i = 0; i < data.length; i++) {
+        var row = data[i];
+        console.log(row);
+        console.log(o);
+        if (row.id_number == idNumber.val() && row.id != o.id) {
+          idNumber.error('Mükerrer TCKN.');
+          noError = false;
+        }
       }
     }
     return noError;
