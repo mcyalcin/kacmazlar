@@ -76,7 +76,6 @@ $(document).ready(function () {
           licensePlate.error('Geçersiz plaka.');
           noError = false;
         }
-        console.log(o);
         var data = $('#vehicles').dataTable().fnGetData();
         for (var i = 0; i < data.length; i++) {
           var row = data[i];

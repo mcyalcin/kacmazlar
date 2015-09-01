@@ -92,8 +92,6 @@ $(document).ready(function () {
       var data = $('#drivers').dataTable().fnGetData();
       for (var i = 0; i < data.length; i++) {
         var row = data[i];
-        console.log(row);
-        console.log(o);
         if (row.id_number == idNumber.val() && row.id != o.id) {
           idNumber.error('Mükerrer TCKN.');
           noError = false;
