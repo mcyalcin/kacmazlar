@@ -27,7 +27,7 @@ function getFirms(res) {
       results.push(row);
     });
     query.on('end', function () {
-      client.end();
+      done();
       return res.json({data: results});
     });
     if (err) {
@@ -71,6 +71,7 @@ router.post('/', function (req, res) {
         result = row;
       });
       query.on('end', function () {
+        dome();
         res.json({row: result});
       });
       if (err) {
@@ -87,6 +88,7 @@ router.post('/', function (req, res) {
         query = client.query('delete from firms where id=any($1::int[])', [ids]);
       }
       query.on('end', function () {
+        done();
         client.end();
         res.json({});
       });
@@ -121,6 +123,7 @@ router.post('/', function (req, res) {
         result = row;
       });
       query.on('end', function () {
+        done();
         res.json({row: result});
       });
       if (err) {
