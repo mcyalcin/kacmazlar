@@ -22,21 +22,21 @@ router.get('/api/options', function (req, res) {
 
   pg.connect(connectionString, function (err, client, done) {
     //language=SQL
-    var subcontractorQuery = client.query('SELECT name FROM firms WHERE is_subcontractor = TRUE');
+    var subcontractorQuery = client.query('SELECT name FROM firms WHERE is_subcontractor = TRUE ORDER BY name');
     subcontractorQuery.on('row', function (row) {
       options.subcontractorOptions.push(row.name);
       if (!options.subcontractorDef) options.subcontractorDef = row.name;
     });
     subcontractorQuery.on('end', function () {
       //language=SQL
-      var licenseHolderQuery = client.query('SELECT name FROM firms WHERE is_license_holder = TRUE');
+      var licenseHolderQuery = client.query('SELECT name FROM firms WHERE is_license_holder = TRUE ORDER BY name');
       licenseHolderQuery.on('row', function (row) {
         options.licenseHolderOptions.push(row.name);
         if (!options.licenseHolderDef) options.licenseHolderDef = row.name;
       });
       licenseHolderQuery.on('end', function () {
         //language=SQL
-        var c2HolderQuery = client.query('SELECT name FROM firms WHERE is_c2_holder = TRUE');
+        var c2HolderQuery = client.query('SELECT name FROM firms WHERE is_c2_holder = TRUE ORDER BY name');
         c2HolderQuery.on('row', function (row) {
           options.c2HolderOptions.push(row.name);
           if (!options.c2HolderDef) options.c2HolderDef = row.name;
