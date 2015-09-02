@@ -71,7 +71,7 @@ router.post('/', function (req, res) {
         result = row;
       });
       query.on('end', function () {
-        dome();
+        done();
         return res.json({row: result});
       });
       if (err) {
@@ -97,7 +97,7 @@ router.post('/', function (req, res) {
     });
   } else if (action == 'edit') {
     var id = req.body.id;
-    pg.connect(connectionString, function (err, client) {
+    pg.connect(connectionString, function (err, client, done) {
       // language=SQL
       var query = client.query('UPDATE firms SET name=($1), address=($2), phone_number=($3), is_c2_holder=($4), is_license_holder=($5), is_subcontractor=($6) WHERE id=($7) RETURNING *',
         [data.name, data.address, data.phone_number, data.is_c2_holder, data.is_license_holder, data.is_subcontractor, id]);
