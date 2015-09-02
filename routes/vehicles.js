@@ -19,6 +19,8 @@ router.get('/api/options', function (req, res) {
   options.subcontractorOptions = [];
   options.licenseHolderOptions = [];
   options.c2HolderOptions = [];
+  options.permissionOptions = ['YOK', 'VAR', 'İPTAL'];
+  options.permissionDef = 'YOK';
 
   pg.connect(connectionString, function (err, client, done) {
     //language=SQL
@@ -62,7 +64,8 @@ router.get('/api', function (req, res) {
         vehicle.license_plate, \
         subcontractor.name AS subcontractor, \
         license_holder.name AS license_holder, \
-        c2_holder.name AS c2_holder\
+        c2_holder.name AS c2_holder,\
+        vehicle.permission_status AS permission_status \
         FROM vehicles vehicle\
         LEFT JOIN firms subcontractor ON subcontractor.id = vehicle.subcontractor_firm\
         LEFT JOIN firms license_holder ON license_holder.id = vehicle.license_holder_firm\
@@ -101,17 +104,18 @@ router.post('/api', function (req, res) {
       license_plate: formatLicensePlate(req.body["data[license_plate]"]),
       subcontractor: req.body["data[subcontractor]"],
       license_holder: req.body["data[license_holder]"],
-      c2_holder: req.body["data[c2_holder]"]
+      c2_holder: req.body["data[c2_holder]"],
+      permission_status: req.body["data[permission_status]"]
     };
     pg.connect(connectionString, function (err, client, done) {
       //language=SQL
       var query = client.query(
-        'INSERT INTO vehicles(type, license_plate, subcontractor_firm, license_holder_firm, c2_holder_firm) \
-           SELECT ($1), ($2), s.id, l.id, c.id \
+        'INSERT INTO vehicles(type, license_plate, subcontractor_firm, license_holder_firm, c2_holder_firm, permission_status) \
+           SELECT ($1), ($2), s.id, l.id, c.id, ($6) \
            FROM firms AS s, firms AS l, firms AS c \
            WHERE s.name LIKE ($3) AND l.name LIKE ($4) AND c.name LIKE ($5) \
          RETURNING *',
-        [data.type, data.license_plate, data.subcontractor, data.license_holder, data.c2_holder]
+        [data.type, data.license_plate, data.subcontractor, data.license_holder, data.c2_holder, data.permission_status]
       );
       var result = {};
       query.on('row', function (row) {
@@ -125,7 +129,8 @@ router.post('/api', function (req, res) {
             vehicle.license_plate, \
             subcontractor.name AS subcontractor, \
             license_holder.name AS license_holder, \
-            c2_holder.name AS c2_holder\
+            c2_holder.name AS c2_holder,\
+            vehicle.permission_status AS permission_status \
             FROM vehicles vehicle\
             LEFT JOIN firms subcontractor ON subcontractor.id = vehicle.subcontractor_firm\
             LEFT JOIN firms license_holder ON license_holder.id = vehicle.license_holder_firm\
@@ -170,7 +175,8 @@ router.post('/api', function (req, res) {
       license_plate: formatLicensePlate(req.body["data[license_plate]"]),
       subcontractor: req.body["data[subcontractor]"],
       license_holder: req.body["data[license_holder]"],
-      c2_holder: req.body["data[c2_holder]"]
+      c2_holder: req.body["data[c2_holder]"],
+      permission_status: req.body["data[permission_status]"]
     };
     var id = req.body.id;
     pg.connect(connectionString, function (err, client, done) {
@@ -181,14 +187,15 @@ router.post('/api', function (req, res) {
         license_plate = f.license_plate,\
         subcontractor_firm = f.sid, \
         c2_holder_firm = f.cid, \
-        license_holder_firm = f.lid\
+        license_holder_firm = f.lid,\
+        permission_status = ($7) \
         FROM (\
           SELECT ($1::TEXT) AS type, ($2::TEXT) AS license_plate, c.id AS cid, l.id AS lid, s.id AS sid\
           FROM firms AS c, firms AS l, firms AS s\
           WHERE c.name LIKE ($5) AND l.name LIKE ($4) AND s.name LIKE ($3)\
         ) f\
         WHERE v.id = ($6);',
-        [data.type, data.license_plate, data.subcontractor, data.license_holder, data.c2_holder, id]);
+        [data.type, data.license_plate, data.subcontractor, data.license_holder, data.c2_holder, id, data.permission_status]);
       var result = {};
       query.on('row', function (row) {
         result = row;
@@ -201,7 +208,8 @@ router.post('/api', function (req, res) {
             vehicle.license_plate, \
             subcontractor.name AS subcontractor, \
             license_holder.name AS license_holder, \
-            c2_holder.name AS c2_holder\
+            c2_holder.name AS c2_holder,\
+            vehicle.permission_status AS permission_status\
             FROM vehicles vehicle\
             LEFT JOIN firms subcontractor ON subcontractor.id = vehicle.subcontractor_firm\
             LEFT JOIN firms license_holder ON license_holder.id = vehicle.license_holder_firm\

@@ -56,6 +56,12 @@ $(document).ready(function () {
         type: "select",
         options: data.c2HolderOptions,
         def: data.c2HolderDef
+      }, {
+        label: "Gümrük izni?",
+        name: "permission_status",
+        type: "select",
+        options: data.permissionOptions,
+        def: data.permissionDef
       }]
     });
 
@@ -100,7 +106,8 @@ $(document).ready(function () {
         {"data": "license_plate"},
         {"data": "subcontractor"},
         {"data": "license_holder"},
-        {"data": "c2_holder"}
+        {"data": "c2_holder"},
+        {"data": "permission_status"}
       ],
       tableTools: {
         sRowSelect: "os",
