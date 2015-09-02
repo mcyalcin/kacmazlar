@@ -22,26 +22,26 @@ router.get('/api/options', function (req, res) {
   options.productOptions = [];
   pg.connect(connectionString, function (err, client, done) {
     // language=SQL
-    var plateQuery = client.query('SELECT license_plate, type FROM vehicles');
+    var plateQuery = client.query('SELECT license_plate, type FROM vehicles ORDER BY name');
     plateQuery.on('row', function (row) {
       if (row.type === 'Dorse') options.trailerPlateOptions.push(row.license_plate);
       else options.tractorPlateOptions.push(row.license_plate);
     });
     plateQuery.on('end', function () {
       // language=SQL
-      var driverQuery = client.query('SELECT name, surname, id_number FROM drivers');
+      var driverQuery = client.query('SELECT name, surname, id_number FROM drivers ORDER BY name');
       driverQuery.on('row', function (row) {
         options.driverOptions.push(row.name + ' ' + row.surname + ' - ' + row.id_number);
       });
       driverQuery.on('end', function () {
         // language=SQL
-        var locationQuery = client.query('SELECT name FROM locations');
+        var locationQuery = client.query('SELECT name FROM locations ORDER BY name');
         locationQuery.on('row', function (row) {
           options.locationOptions.push(row.name);
         });
         locationQuery.on('end', function () {
           // language=SQL
-          var productQuery = client.query('SELECT name FROM products');
+          var productQuery = client.query('SELECT name FROM products ORDER BY name');
           productQuery.on('row', function (row) {
             options.productOptions.push(row.name);
           });
