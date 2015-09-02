@@ -22,7 +22,7 @@ router.get('/api/options', function (req, res) {
   options.productOptions = [];
   pg.connect(connectionString, function (err, client, done) {
     // language=SQL
-    var plateQuery = client.query('SELECT license_plate, type FROM vehicles ORDER BY name');
+    var plateQuery = client.query('SELECT license_plate, type FROM vehicles ORDER BY license_plate');
     plateQuery.on('row', function (row) {
       if (row.type === 'Dorse') options.trailerPlateOptions.push(row.license_plate);
       else options.tractorPlateOptions.push(row.license_plate);
