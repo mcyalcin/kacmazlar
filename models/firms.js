@@ -72,7 +72,7 @@ router.post('/', function (req, res) {
       });
       query.on('end', function () {
         dome();
-        res.json({row: result});
+        return res.json({row: result});
       });
       if (err) {
         console.log(err);
@@ -89,8 +89,7 @@ router.post('/', function (req, res) {
       }
       query.on('end', function () {
         done();
-        client.end();
-        res.json({});
+        return res.json({});
       });
       if (err) {
         console.log(err);
@@ -124,7 +123,7 @@ router.post('/', function (req, res) {
       });
       query.on('end', function () {
         done();
-        res.json({row: result});
+        return res.json({row: result});
       });
       if (err) {
         console.log(err);
