@@ -54,8 +54,19 @@ $(document).ready(function () {
     }, {
       label: "Telefon Numarası:",
       name: "phone_number"
+    }, {
+      label: "Gümrük İzni?",
+      name: "permission_status",
+      type: "select",
+      options: ["YOK", "VAR", "İPTAL"],
+      def: "YOK"
+    }, {
+      label: "Ehliyet?",
+      name: "has_license_scan",
+      type: "select",
+      options: ["YOK", "VAR"],
+      def: "YOK"
     }
-
     ]
   });
 
@@ -109,6 +120,7 @@ $(document).ready(function () {
     dom: "T<'clear'>lfrtip",
     ajax: "drivers/api",
     columns: [
+      {"data": "DT_RowId"},
       {"data": "name"},
       {"data": "surname"},
       {"data": "id_number"},
@@ -116,7 +128,9 @@ $(document).ready(function () {
       {"data": "father_name"},
       {"data": "birthplace"},
       {"data": "birth_date"},
-      {"data": "phone_number"}
+      {"data": "phone_number"},
+      {"data": "permission_status"},
+      {"data": "has_license_scan"}
     ],
     tableTools: {
       sRowSelect: "os",

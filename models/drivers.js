@@ -23,6 +23,11 @@ function getDrivers(res) {
     query.on('row', function (row) {
       row.DT_RowId = row.id;
       row.birth_date = formatDate(row.birth_date);
+      if (row.has_license_scan) {
+        row.has_license_scan = 'VAR';
+      } else {
+        row.has_license_scan = 'YOK';
+      }
       results.push(row);
     });
     query.on('end', function () {
@@ -44,19 +49,26 @@ router.post('/', function (req, res) {
     id_number: req.body["data[id_number]"],
     birthplace: req.body["data[birthplace]"],
     birth_date: parseDate(req.body["data[birth_date]"]),
-    phone_number: req.body["data[phone_number]"]
+    phone_number: req.body["data[phone_number]"],
+    permission_status: req.body["data[permission_status]"],
+    has_license_scan: req.body["data[has_license_scan]"] == "VAR"
   };
   var action = req.body.action;
   if (action == 'create') {
     pg.connect(connectionString, function (err, client, done) {
       var query;
       // language=SQL
-      query = client.query('insert into drivers(name, surname, id_number, mother_name, father_name, birthplace, birth_date, phone_number) values($1, $2, $3, $4, $5, $6, $7, $8) returning *',
-        [data.name, data.surname, data.id_number, data.mother_name, data.father_name, data.birthplace, data.birth_date, data.phone_number]);
+      query = client.query('insert into drivers(name, surname, id_number, mother_name, father_name, birthplace, birth_date, phone_number, permission_status, has_license_scan) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) returning *',
+        [data.name, data.surname, data.id_number, data.mother_name, data.father_name, data.birthplace, data.birth_date, data.phone_number, data.permission_status, data.has_license_scan]);
       var result = {};
       query.on('row', function (row) {
         row.DT_RowId = row.id;
         row.birth_date = formatDate(row.birth_date);
+        if (row.has_license_scan) {
+          row.has_license_scan = 'VAR';
+        } else {
+          row.has_license_scan = 'YOK';
+        }
         result = row;
       });
       query.on('end', function () {
@@ -89,12 +101,17 @@ router.post('/', function (req, res) {
     pg.connect(connectionString, function (err, client, done) {
       var query;
       // language=SQL
-      query = client.query('update drivers set name=($1), surname=($2), id_number=($3), mother_name=($4), father_name=($5), birthplace=($6), birth_date=($7), phone_number=($8) where id=($9) returning *',
-        [data.name, data.surname, data.id_number, data.mother_name, data.father_name, data.birthplace, data.birth_date, data.phone_number, id]);
+      query = client.query('update drivers set name=($1), surname=($2), id_number=($3), mother_name=($4), father_name=($5), birthplace=($6), birth_date=($7), phone_number=($8), permission_status=($10), has_license_scan=($11) where id=($9) returning *',
+        [data.name, data.surname, data.id_number, data.mother_name, data.father_name, data.birthplace, data.birth_date, data.phone_number, id, data.permission_status, data.has_license_scan]);
       var result = {};
       query.on('row', function (row) {
         row.DT_RowId = row.id;
         row.birth_date = formatDate(row.birth_date);
+        if (row.has_license_scan) {
+          row.has_license_scan = 'VAR';
+        } else {
+          row.has_license_scan = 'YOK';
+        }
         result = row;
       });
       query.on('end', function () {
