@@ -22,7 +22,7 @@ router.get('/api/options', function (req, res) {
   options.productOptions = [];
   pg.connect(connectionString, function (err, client, done) {
     // language=SQL
-    var plateQuery = client.query('SELECT license_plate, type FROM vehicles ORDER BY license_plate');
+    var plateQuery = client.query('SELECT license_plate, type FROM vehicles ORDER BY name');
     plateQuery.on('row', function (row) {
       if (row.type === 'Dorse') options.trailerPlateOptions.push(row.license_plate);
       else options.tractorPlateOptions.push(row.license_plate);
@@ -101,8 +101,6 @@ function applyBusinessRulesThenPersist(data) {
       });
       query.on('end', function () {
         done();
-        console.log('selami');
-        console.log(result);
         if (result == 'Irak' && data.delivery_weight && data.customs_weight) {
           data.customs_loss = data.customs_weight - data.delivery_weight;
         } else if (result == 'Türkiye' && data.customs_weight && data.loading_weight) {
@@ -156,7 +154,6 @@ router.post('/api', function (req, res) {
   if (action === 'create') {
     if (data.loading_location) {
       pg.connect(connectionString, function (err, client, done) {
-        console.log('bla');
         // language=SQL
         var locationQuery = client.query('SELECT country FROM locations WHERE name LIKE ($1)', [data.loading_location]);
         var result = '';
@@ -209,7 +206,6 @@ router.post('/api', function (req, res) {
         var result = '';
         locationQuery.on('row', function (row) {
           result = row.country;
-          console.log('country: ' + result);
           if (result == 'Irak' && data.delivery_weight && data.customs_weight) {
             data.customs_loss = data.customs_weight - data.delivery_weight;
           } else if (result == 'Türkiye' && data.customs_weight && data.loading_weight) {

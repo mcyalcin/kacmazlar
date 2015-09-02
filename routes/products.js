@@ -20,7 +20,7 @@ router.get('/api', function(req, res) {
       results.push(row);
     });
     query.on('end', function () {
-      client.end();
+      done();
       return res.json({data: results});
     });
     if (err) {

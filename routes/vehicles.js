@@ -14,7 +14,7 @@ router.get('/', function (req, res) {
 
 router.get('/api/options', function (req, res) {
   var options = {};
-  options.typeOptions = ['Çekici', 'Dorse', 'Tanker'];
+  options.typeOptions = ['ÇEKİCİ', 'DORSE', 'TANKER'];
 
   options.subcontractorOptions = [];
   options.licenseHolderOptions = [];

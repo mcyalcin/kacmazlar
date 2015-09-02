@@ -12,7 +12,7 @@ function getLocations(res) {
       results.push(row);
     });
     query.on('end', function () {
-      client.end();
+      done();
       return res.json({data: results});
     });
     if (err) {
@@ -37,6 +37,7 @@ router.post('/', function (req, res) {
         result = row;
       });
       query.on('end', function () {
+        done();
         res.json({row: result});
       });
       if (err) {
@@ -53,7 +54,7 @@ router.post('/', function (req, res) {
         query = client.query('delete from locations where id=any($1::int[])', [ids]);
       }
       query.on('end', function () {
-        client.end();
+        done();
         res.json({});
       });
       if (err) {
@@ -71,6 +72,7 @@ router.post('/', function (req, res) {
         result = row;
       });
       query.on('end', function () {
+        done();
         res.json({row: result});
       });
       if (err) {
