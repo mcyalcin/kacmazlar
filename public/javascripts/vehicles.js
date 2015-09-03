@@ -102,6 +102,7 @@ $(document).ready(function () {
       dom: "T<'clear'>lfrtip",
       ajax: "vehicles/api",
       columns: [
+        {"data": "DT_RowId"},
         {"data": "type"},
         {"data": "license_plate"},
         {"data": "subcontractor"},
