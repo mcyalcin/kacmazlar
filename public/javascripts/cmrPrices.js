@@ -59,7 +59,7 @@ $(document).ready(function () {
     });
 
     $('#cmr_prices').dataTable({
-      paging: false,
+      lengthMenu: [[-1, 50, 10], ["Tüm", 50, 10]],
       language: {
         url: 'https://cdn.datatables.net/plug-ins/1.10.7/i18n/Turkish.json'
       },
