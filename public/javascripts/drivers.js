@@ -66,6 +66,9 @@ $(document).ready(function () {
       type: "select",
       options: ["YOK", "VAR"],
       def: "YOK"
+    }, {
+      name: "DT_RowId",
+      type: "hidden"
     }
     ]
   });
@@ -109,6 +112,7 @@ $(document).ready(function () {
         }
       }
     }
+    o.DT_RowId = o.id;
     return noError;
   });
 

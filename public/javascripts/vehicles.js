@@ -62,6 +62,9 @@ $(document).ready(function () {
         type: "select",
         options: data.permissionOptions,
         def: data.permissionDef
+      }, {
+        name: "DT_RowId",
+        type: "hidden"
       }]
     });
 
@@ -91,6 +94,7 @@ $(document).ready(function () {
           }
         }
       }
+      o.DT_RowId = o.id;
       return noError;
     });
 
