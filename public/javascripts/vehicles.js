@@ -88,6 +88,7 @@ $(document).ready(function () {
         var data = $('#vehicles').dataTable().fnGetData();
         for (var i = 0; i < data.length; i++) {
           var row = data[i];
+          // TODO: improve this check - use dtrowid, upper lhs
           if (row.license_plate.replace(/\s/g, '') == licensePlate.val().replace(/\s/g, '').toUpperCase() && row.id != o.id) {
             licensePlate.error('Mükerrer plaka.');
             noError = false;
