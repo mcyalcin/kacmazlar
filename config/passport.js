@@ -31,8 +31,11 @@ module.exports = function (passport) {
 
   passport.deserializeUser(function (id, done) {
     console.log('des ' + id);
-    if (id == 1) return done(null, {username: 'admin', id: 1});
-    else if (id == 2) return done(null, {username: 'user', id: 2});
+    for (var i = 0; i < users.length; i++) {
+      if (users[i].id == id) return done(null, users[i]);
+    }
+    //if (id == 1) return done(null, {username: 'admin', id: 1});
+    //else if (id == 2) return done(null, {username: 'user', id: 2});
     //User.findById(id, function (err, user) {
     //  done(err, user);
     //});
