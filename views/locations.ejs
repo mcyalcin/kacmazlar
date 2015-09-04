@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
   <% include partials/header.ejs %>
+  <% if (user.role == 'admin' || user.role == 'ops') { %>
   <script src="javascripts/locations.js"></script>
+  <% } else { %>
+  <script src="javascripts/locations-obs.js"></script>
+  <% } %>
 </head>
 <body>
 <% include partials/nav.ejs %>
