@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
   <% include partials/header.ejs %>
+  <% if (user.role == 'admin' || user.role == 'ops') { %>
   <script src="javascripts/drivers.js"></script>
+  <% } else { %>
+  <script src="javascripts/drivers-obs.js"></script>
+  <% } %>
 </head>
 <body>
 <% include partials/nav.ejs %>
