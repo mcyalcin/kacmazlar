@@ -1,44 +1,15 @@
-// TODO: Rework for postgre
 var LocalStrategy = require('passport-local').Strategy;
-
-var users = [{
-  id: 1,
-  name: 'admin',
-  password: 'admin',
-  role: 'admin'
-}, {
-  id: 2,
-  name: 'user',
-  password: 'user',
-  role: 'user'
-}, {
-  id: 3,
-  name: 'observer',
-  password: 'observer',
-  role: 'observer'
-}, {
-  id: 4,
-  name: 'field',
-  password: 'field',
-  role: 'field'
-}];
+var users = require('../models/users');
 
 module.exports = function (passport) {
   passport.serializeUser(function (user, done) {
-    console.log('ser ' + user);
     done(null, user.id);
   });
 
   passport.deserializeUser(function (id, done) {
-    console.log('des ' + id);
-    for (var i = 0; i < users.length; i++) {
-      if (users[i].id == id) return done(null, users[i]);
-    }
-    //if (id == 1) return done(null, {username: 'admin', id: 1});
-    //else if (id == 2) return done(null, {username: 'user', id: 2});
-    //User.findById(id, function (err, user) {
-    //  done(err, user);
-    //});
+    users.find(id, function(user) {
+      return done(null, user);
+    });
   });
 
   passport.use('local-login', new LocalStrategy({
@@ -47,21 +18,10 @@ module.exports = function (passport) {
         passReqToCallback: true
       },
       function (req, email, password, done) {
-        if (email == 'admin' && password == 'admin') return done(null, {username: 'admin', id: 1});
-        else if (email == 'user' && password == 'user') return done(null, {username: 'user', id: 2});
-        else return done(null, false, req.flash('loginMessage', 'Geçersiz kullanıcı adı veya şifre.'));
-        //User.findOne({'local.email': email}, function(err, user) {
-        //  if (err) {
-        //    return done(err);
-        //  }
-        //  if (!user) {
-        //    return done(null, false, req.flash('loginMessage', 'No user found.'));
-        //  }
-        //  if (!user.validPassword(password)) {
-        //    return done(null, false, req.flash('loginMessage', 'Wrong password.'));
-        //  }
-        //  return done(null, user);
-        //});
+        users.login(email, password, function(user) {
+          if (user && user.id) return done(null, user);
+          else return done(null, false, req.flash('loginMessage', 'Geçersiz kullanıcı adı veya şifre.'));
+        });
       }
     )
   );

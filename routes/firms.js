@@ -6,9 +6,8 @@ router.get('/', function (req, res, next) {
   if (typeof req.user == 'undefined') {
     res.render('login');
   } else if (req.user.role == 'admin'){
-    console.log('wtf');
     res.render('firms', {user: req.user});
-  } else if (req.user.role == 'user' || req.user.role == 'observer') {
+  } else if (req.user.role == 'ops' || req.user.role == 'observer') {
     res.render('firms-obs', {user: req.user});
   }
 });
