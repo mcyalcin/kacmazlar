@@ -7,6 +7,7 @@
       <li>
         <a href="/shipments"> <span class="glyphicon glyphicon-road"></span> Sevkiyatlar</a>
       </li>
+      <% if (user.role == 'admin' || user.role == 'ops' || user.role == 'observer') { %>
       <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span
               class="glyphicon glyphicon-info-sign"></span> Tanım Sayfaları<span class="caret"></span></a>
@@ -24,6 +25,7 @@
           <% } %>
         </ul>
       </li>
+      <% } %>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li class="navbar-right">

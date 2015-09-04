@@ -35,7 +35,7 @@ router.get('/api', function (req, res) {
     });
   } else {
     res.status(401);
-    res.send('Go away.');
+    res.send('Unauthorized.');
   }
 });
 
@@ -106,7 +106,7 @@ router.post('/api', function (req, res) {
     }
   } else {
     res.status(401);
-    res.send('Go away.');
+    res.send('Unauthorized.');
   }
 });
 
