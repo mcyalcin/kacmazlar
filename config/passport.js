@@ -1,6 +1,28 @@
 // TODO: Rework for postgre
 var LocalStrategy = require('passport-local').Strategy;
 
+var users = [{
+  id: 1,
+  name: 'admin',
+  password: 'admin',
+  role: 'admin'
+}, {
+  id: 2,
+  name: 'user',
+  password: 'user',
+  role: 'user'
+}, {
+  id: 3,
+  name: 'observer',
+  password: 'observer',
+  role: 'observer'
+}, {
+  id: 4,
+  name: 'field',
+  password: 'field',
+  role: 'field'
+}];
+
 module.exports = function (passport) {
   passport.serializeUser(function (user, done) {
     console.log('ser ' + user);
