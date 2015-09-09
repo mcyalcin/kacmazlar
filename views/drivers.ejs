@@ -11,6 +11,13 @@
 <body>
 <% include partials/nav.ejs %>
 <div class="container">
+  <% if (user.role == 'admin' || user.role == 'ops') { %>
+  <form action="/drivers/api/licenseUpload/" method="post" enctype="multipart/form-data">
+    <input id="license_selector" name="file" type="file">
+    <input id="driver_id" name="id" type="text">
+    <input id="license_submit" type="submit">
+  </form>
+  <% } %>
   <table id="drivers" class="display" cellspacing="0">
     <thead>
     <tr>

@@ -159,6 +159,34 @@ $(document).ready(function () {
         {
           sExtends: 'print',
           sButtonText: 'Yazdır'
+        },
+        {
+          sExtends: 'text',
+          sButtonText: 'Resim Yükle',
+          fnClick: function() {
+            var oTable = $('#drivers').dataTable();
+            var row = oTable._('tr.selected');
+            if (row.length != 1) {
+              alert('Bir ve yalnız bir satır seçiniz.');
+            } else {
+              console.log(row[0]);
+              $('#driver_id').val(row[0].DT_RowId);
+              $('#license_selector').trigger('click').oncomplete(function() {
+                $('#license_submit').trigger('click');
+              });
+            }
+          }
+        },
+        {
+          sExtends: 'text',
+          sButtonText: 'Resim İndir',
+          fnClick: function() {
+            var oTable = $('#drivers').dataTable();
+            var row = oTable._('tr.selected');
+            console.log(row);
+            //window.location.href = "/license-image" +
+            //alert('Not implemented yet.');
+          }
         }
       ]
     }

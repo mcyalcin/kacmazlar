@@ -40,6 +40,12 @@ function getDrivers(res) {
   });
 }
 
+router.post('/licenseUpload', function(req, res) {
+  console.log(req.body);
+  console.log(req.files);
+  return res.redirect('/drivers');
+});
+
 router.post('/', function (req, res) {
   var data = {
     name: req.body["data[name]"],
