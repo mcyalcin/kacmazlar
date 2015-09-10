@@ -29,6 +29,11 @@ function getDrivers(res) {
       } else {
         row.has_license_scan = 'YOK';
       }
+      if (row.license_scan_uploaded) {
+        row.license_scan_uploaded = 'VAR';
+      } else {
+        row.license_scan_uploaded = 'YOK';
+      }
       results.push(row);
     });
     query.on('end', function () {
@@ -49,7 +54,7 @@ router.post('/licenseUpload', upload.single('license'), function (req, res) {
     imgData = '\\x' + imgData;
     pg.connect(connectionString, function (err, client, done) {
       // language=SQL
-      client.query('UPDATE drivers SET license_scan = ($1) WHERE id = ($2)',
+      client.query('UPDATE drivers SET license_scan = ($1), license_scan_uploaded = TRUE WHERE id = ($2)',
         [imgData, req.body.id],
         function (err, writeResult) {
           if (err) {
@@ -96,7 +101,7 @@ router.post('/', function (req, res) {
     pg.connect(connectionString, function (err, client, done) {
       var query;
       // language=SQL
-      query = client.query('INSERT INTO drivers(name, surname, id_number, mother_name, father_name, birthplace, birth_date, phone_number, permission_status, has_license_scan) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
+      query = client.query('INSERT INTO drivers(name, surname, id_number, mother_name, father_name, birthplace, birth_date, phone_number, permission_status, has_license_scan, license_scan_uploaded) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, false) RETURNING *',
         [data.name, data.surname, data.id_number, data.mother_name, data.father_name, data.birthplace, data.birth_date, data.phone_number, data.permission_status, data.has_license_scan]);
       var result = {};
       query.on('row', function (row) {
@@ -106,6 +111,11 @@ router.post('/', function (req, res) {
           row.has_license_scan = 'VAR';
         } else {
           row.has_license_scan = 'YOK';
+        }
+        if (row.license_scan_uploaded) {
+          row.license_scan_uploaded = 'VAR';
+        } else {
+          row.license_scan_uploaded = 'YOK';
         }
         result = row;
       });
@@ -149,6 +159,11 @@ router.post('/', function (req, res) {
           row.has_license_scan = 'VAR';
         } else {
           row.has_license_scan = 'YOK';
+        }
+        if (row.license_scan_uploaded) {
+          row.license_scan_uploaded = 'VAR';
+        } else {
+          row.license_scan_uploaded = 'YOK';
         }
         result = row;
       });

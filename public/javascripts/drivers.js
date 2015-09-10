@@ -67,6 +67,9 @@ $(document).ready(function () {
       options: ["YOK", "VAR"],
       def: "YOK"
     }, {
+      name: "license_scan_uploaded",
+      type: "hidden"
+    }, {
       name: "DT_RowId",
       type: "hidden"
     }
@@ -134,7 +137,8 @@ $(document).ready(function () {
       {"data": "birth_date"},
       {"data": "phone_number"},
       {"data": "permission_status"},
-      {"data": "has_license_scan"}
+      {"data": "has_license_scan"},
+      {"data": "license_scan_uploaded"}
     ],
     tableTools: {
       sRowSelect: "os",
