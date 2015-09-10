@@ -20,7 +20,7 @@ function getDrivers(res) {
   var results = [];
   pg.connect(connectionString, function (err, client, done) {
     // language = SQL
-    var query = client.query('select * from drivers order by id asc');
+    var query = client.query('select name,surname,father_name,mother_name,birthplace, birth_date, phone_number,id_number,id,permission_status,has_license_scan, license_scan_uploaded from drivers order by id asc');
     query.on('row', function (row) {
       row.DT_RowId = row.id;
       row.birth_date = formatDate(row.birth_date);
