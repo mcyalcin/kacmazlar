@@ -6,7 +6,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
 
 //var routes = require('./routes/index');
@@ -44,16 +43,8 @@ require('./config/passport')(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
-//
-//var Account = require('./models/account');
-//passport.use(new LocalStrategy(Account.authenticate()));
-//passport.serializeUser(Account.serializeUser());
-//passport.deserializeUser(Account.deserializeUser());
-//
-//mongoose.connect('mongodb://localhost/passport_local_mongoose_express4');
 
 require('./routes/index')(app, passport);
-//app.use('/', routes);
 app.use('/drivers', drivers);
 app.use('/locations', locations);
 app.use('/cmr_prices', cmrPrices);
