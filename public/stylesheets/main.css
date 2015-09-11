@@ -25,3 +25,18 @@
     .jumbotron .lang-logo img {
       max-width: 100%; }
 
+body.index {
+  background: url(../images/bg1.jpg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+body.login {
+  background: url(../images/acilis.jpg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
