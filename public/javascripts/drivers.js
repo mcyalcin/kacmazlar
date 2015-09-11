@@ -194,7 +194,9 @@ $(document).ready(function () {
               xmlhttp.open("POST","drivers/api/licenseDownload",true);
               xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
               xmlhttp.send("id=" + row[0].DT_RowId);
-              window.open(row[0].DT_RowId + ".jpg");
+              xmlhttp.onreadystatechange = function() {
+                window.open(row[0].DT_RowId + ".jpg");
+              };
             }
           }
         }
