@@ -195,7 +195,9 @@ $(document).ready(function () {
               xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
               xmlhttp.send("id=" + row[0].DT_RowId);
               xmlhttp.onreadystatechange = function() {
-                window.open(row[0].DT_RowId + ".jpg");
+                if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+                  window.open(row[0].DT_RowId + ".jpg");
+                }
               };
             }
           }
