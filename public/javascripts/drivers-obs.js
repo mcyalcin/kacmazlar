@@ -17,7 +17,8 @@ $(document).ready(function () {
       {"data": "birth_date"},
       {"data": "phone_number"},
       {"data": "permission_status"},
-      {"data": "has_license_scan"}
+      {"data": "has_license_scan"},
+      {"data": "license_scan_uploaded"}
     ],
     tableTools: {
       sRowSelect: "os",
@@ -39,6 +40,23 @@ $(document).ready(function () {
         {
           sExtends: 'print',
           sButtonText: 'Yazdır'
+        },
+        {
+          sExtends: 'text',
+          sButtonText: 'Resim İndir',
+          fnClick: function () {
+            var oTable = $('#drivers').dataTable();
+            var row = oTable._('tr.selected');
+            if (row.length != 1) {
+              alert('Bir ve yalnız bir satır seçiniz.');
+            } else {
+              var xmlhttp = new XMLHttpRequest();
+              xmlhttp.open("POST","drivers/api/licenseDownload",true);
+              xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+              xmlhttp.send("id=" + row[0].DT_RowId);
+              window.open(row[0].DT_RowId + ".jpg");
+            }
+          }
         }
       ]
     }
