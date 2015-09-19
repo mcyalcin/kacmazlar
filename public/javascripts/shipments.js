@@ -108,6 +108,8 @@ $(document).ready(function () {
       "scrollX": true,
       "columns": [
         {"data": "loading_date", defaultContent:""},
+        {"data": "customs_entry_date", defaultContent:""},
+        {"data": "customs_exit_date", defaultContent:""},
         {"data": "delivery_date", defaultContent:""},
         {"data": "company_name", defaultContent:""},
         {"data": "tractor_plate_number", defaultContent:""},
@@ -132,6 +134,8 @@ $(document).ready(function () {
         {"data": "cmr_price", defaultContent:""},
         {"data": "shipping_unit_price", defaultContent:""},
         {"data": "shipping_price", defaultContent:""},
+        {"data": "navlum_unit_price", defaultContent:""},
+        {"data": "navlum_price", defaultContent:""},
         {"data": "net_price", defaultContent:""},
         {"data": "payment_date", defaultContent:""}
       ],
