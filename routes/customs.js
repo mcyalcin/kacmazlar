@@ -36,7 +36,7 @@ router.get('/api', function (req, res) {
   pg.connect(connectionString, function (err, client, done) {
     var results = [];
     // language=SQL
-    var query = client.query('SELECT p.name AS product, c.id, c.allowed, c.start_date, c.end_date, c.unit_cost FROM customs_wastage_costs c LEFT JOIN products p ON c.product = p.id');
+    var query = client.query('SELECT p.name AS product, c.id, c.allowed, c.allowed_rate, c.start_date, c.end_date, c.unit_cost FROM customs_wastage_costs c LEFT JOIN products p ON c.product = p.id');
     query.on('row', function (row) {
       row.DT_RowId = row.id;
       row.start_date = formatDate(row.start_date);
@@ -53,11 +53,17 @@ router.get('/api', function (req, res) {
   });
 });
 
+//function parseNumber(input) {
+//  if (parseFloat(input) == 'NaN') return NaN;
+//  else return parseFloat(input);
+//}
+
 //noinspection JSUnresolvedFunction
 router.post('/api', function (req, res) {
   var data = {
     product: req.body["data[product]"],
-    allowed: req.body["data[allowed]"],
+    allowed: parseFloat(req.body["data[allowed]"]),
+    allowed_rate: parseFloat(req.body["data[allowed_rate]"]),
     unit_cost: req.body["data[unit_cost]"],
     start_date: parseDate(req.body["data[start_date]"]),
     end_date: parseDate(req.body["data[end_date]"])
@@ -67,12 +73,12 @@ router.post('/api', function (req, res) {
     pg.connect(connectionString, function (err, client, done) {
       // language=SQL
       var query = client.query(
-        'INSERT INTO customs_wastage_costs(product, allowed, unit_cost, start_date, end_date) \
+        'INSERT INTO customs_wastage_costs(product, allowed, unit_cost, start_date, end_date, allowed_rate) \
            SELECT p.id, ($2), ($3), ($4), ($5)\
            FROM products AS p \
            WHERE p.name LIKE ($1)\
          RETURNING *',
-        [data.product, data.allowed, data.unit_cost, data.start_date, data.end_date]
+        [data.product, data.allowed, data.unit_cost, data.start_date, data.end_date, data.allowed_rate]
       );
       var id;
       query.on('row', function (row) {
@@ -80,7 +86,7 @@ router.post('/api', function (req, res) {
       });
       query.on('end', function () {
         // language=SQL
-        var select = client.query('SELECT p.name AS product, c.id, c.allowed, c.start_date, c.end_date, c.unit_cost FROM customs_wastage_costs c LEFT JOIN products p ON c.product = p.id WHERE c.id = ($1)', [id]);
+        var select = client.query('SELECT p.name AS product, c.id, c.allowed, c.start_date, c.end_date, c.unit_cost, c.allowed_rate FROM customs_wastage_costs c LEFT JOIN products p ON c.product = p.id WHERE c.id = ($1)', [id]);
         var result;
         select.on('row', function(row) {
           row.DT_RowId = row.id;
@@ -125,14 +131,15 @@ router.post('/api', function (req, res) {
          allowed = ($2),\
          unit_cost = ($3),\
          start_date = ($4),\
-         end_date = ($5)\
+         end_date = ($5),\
+         allowed_rate = ($6)\
          FROM (SELECT id FROM products WHERE name like ($1)) p\
-         WHERE c.id = ($6)',
-        [data.product, data.allowed, data.unit_cost, data.start_date, data.end_date, id]
+         WHERE c.id = ($7)',
+        [data.product, data.allowed, data.unit_cost, data.start_date, data.end_date, data.allowed_rate, id]
       );
       query.on('end', function () {
         // language=SQL
-        var select = client.query('SELECT p.name AS product, c.id, c.allowed, c.start_date, c.end_date, c.unit_cost FROM customs_wastage_costs c LEFT JOIN products p ON c.product = p.id WHERE c.id = ($1)', [id]);
+        var select = client.query('SELECT p.name AS product, c.id, c.allowed, c.start_date, c.end_date, c.unit_cost, c.allowed_rate FROM customs_wastage_costs c LEFT JOIN products p ON c.product = p.id WHERE c.id = ($1)', [id]);
         var result;
         select.on('row', function(row) {
           row.DT_RowId = row.id;

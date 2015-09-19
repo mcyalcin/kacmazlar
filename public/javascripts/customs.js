@@ -39,6 +39,9 @@ $(document).ready(function () {
         label: "Kabul Edilir Fire Miktarı:",
         name: "allowed"
       }, {
+        label: "Kabul Edilir Fire Oranı (miktar belirtilmişse geçersizdir):",
+        name: "allowed_rate"
+      }, {
         label: "Fire Cezası Birim Fiyatı:",
         name: "unit_cost"
       }, {
@@ -64,6 +67,7 @@ $(document).ready(function () {
       columns: [
         {"data": "product"},
         {"data": "allowed"},
+        {"data": "allowed_rate"},
         {"data": "unit_cost"},
         {"data": "start_date"},
         {"data": "end_date"}

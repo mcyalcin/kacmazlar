@@ -3,7 +3,7 @@ var router = express.Router();
 var pg = require('pg');
 var connectionString = process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/kacmaz';
 
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   if (typeof req.user == 'undefined') {
     res.render('login');
   } else {
@@ -11,10 +11,11 @@ router.get('/', function(req, res, next) {
   }
 });
 
-router.get('/api', function(req, res) {
+router.get('/api', function (req, res) {
   var results = [];
   pg.connect(connectionString, function (err, client, done) {
-    var query = client.query('select * from products order by id asc');
+    // language=SQL
+    var query = client.query('SELECT * FROM products ORDER BY id ASC');
     query.on('row', function (row) {
       row.DT_RowId = row.id;
       results.push(row);
@@ -32,15 +33,17 @@ router.get('/api', function(req, res) {
 router.post('/api', function (req, res) {
   var data = {
     name: req.body["data[name]"],
-    allowed_waste: req.body["data[allowed_waste]"],
+    allowed_waste: parseFloat(req.body["data[allowed_waste]"]),
+    allowed_waste_rate: parseFloat(req.body["data[allowed_waste_rate]"]),
     waste_unit_cost: req.body["data[waste_unit_cost]"]
   };
-  console.log('a '+data.waste_unit_cost);
+  console.log('a ' + data.waste_unit_cost);
   var action = req.body.action;
   if (action == 'create') {
     pg.connect(connectionString, function (err, client, done) {
-      var query = client.query('insert into products(name, allowed_waste, waste_unit_cost) values($1, $2, $3) returning *',
-        [data.name, data.allowed_waste, data.waste_unit_cost]);
+      // language=SQL
+      var query = client.query('INSERT INTO products(name, allowed_waste, allowed_waste_rate, waste_unit_cost) VALUES($1, $2, $3, $4) RETURNING *',
+        [data.name, data.allowed_waste, data.allowed_waste_rate, data.waste_unit_cost]);
       var result = {};
       query.on('row', function (row) {
         row.DT_RowId = row.id;
@@ -59,9 +62,11 @@ router.post('/api', function (req, res) {
     pg.connect(connectionString, function (err, client, done) {
       var query;
       if (typeof ids == 'string') {
-        query = client.query('delete from products where id=($1)', [ids]);
+        // language=SQL
+        query = client.query('DELETE FROM products WHERE id=($1)', [ids]);
       } else {
-        query = client.query('delete from products where id=any($1::int[])', [ids]);
+        // language=SQL
+        query = client.query('DELETE FROM products WHERE id=ANY($1::INT[])', [ids]);
       }
       query.on('end', function () {
         done();
@@ -74,8 +79,9 @@ router.post('/api', function (req, res) {
   } else if (action == 'edit') {
     var id = req.body.id;
     pg.connect(connectionString, function (err, client, done) {
-      var query = client.query('update products set name=($1), allowed_waste=($2), waste_unit_cost=($3) where id=($4) returning *',
-        [data.name, data.allowed_waste, data.waste_unit_cost, id]);
+      // language=SQL
+      var query = client.query('UPDATE products SET name=($1), allowed_waste=($2), allowed_waste_rate=($3), waste_unit_cost=($4) WHERE id=($5) RETURNING *',
+        [data.name, data.allowed_waste, data.allowed_waste_rate, data.waste_unit_cost, id]);
       var result = {};
       query.on('row', function (row) {
         row.DT_RowId = row.id;

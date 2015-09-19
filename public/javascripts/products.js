@@ -32,9 +32,12 @@ $(document).ready(function () {
       label: "Ürün Cinsi:",
       name: "name"
     }, {
-      label: "Kabul Edilir Fire Oranı:",
+      label: "Kabul Edilir Fire Miktarı:",
       name: "allowed_waste"
     }, {
+      label: "Kabul Edilir Fire Oranı (miktar belirtilmişse geçersizdir):",
+      name: "allowed_waste_rate"
+    },  {
       label: "Fire Cezası Birim Fiyatı:",
       name: "waste_unit_cost"
     }]
@@ -50,6 +53,7 @@ $(document).ready(function () {
     columns: [
       {"data": "name"},
       {"data": "allowed_waste"},
+      {"data": "allowed_waste_rate"},
       {"data": "waste_unit_cost"}
     ],
     tableTools: {
