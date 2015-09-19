@@ -170,11 +170,12 @@ function setLossData(client, done, data, res, callback) {
       result = row;
     });
     productQuery.on('end', function () {
-      if (parseFloat(result.allowed_waste) != 'NaN') {
+      if (!isNaN(result.allowed_waste)) {
         data.delivery_allowed_loss_amount = parseFloat(result.allowed_waste);
-      } else if (parseFloat(result.allowed_waste_rate) != 'NaN') {
+      } else if (!isNaN(result.allowed_waste_rate)) {
         data.delivery_allowed_loss_amount = parseFloat(result.allowed_waste_rate) * data.loading_weight;
       }
+      data.delivery_loss_unit_price = result.waste_unit_cost;
       setCustomsLossData(client, done, data, res, callback);
     });
   } else {
@@ -191,11 +192,13 @@ function setCustomsLossData(client, done, data, res, callback) {
       result = row;
     });
     customsQuery.on('end', function() {
-      if (parseFloat(result.allowed) != 'NaN') {
-        data.delivery_allowed_loss_amount = parseFloat(result.allowed);
-      } else if (parseFloat(result.allowed_rate) != 'NaN') {
-        data.delivery_allowed_loss_amount = parseFloat(result.allowed_rate) * data.loading_weight;
+      if (!isNaN(result.allowed)) {
+        data.customs_allowed_loss_amount = parseFloat(result.allowed);
+      } else if (!isNaN(result.allowed_rate)) {
+        console.log('buraya girmesi lazimdi');
+        data.customs_allowed_loss_amount = parseFloat(result.allowed_rate) * data.loading_weight;
       }
+      data.customs_loss_unit_price = result.unit_cost;
     });
     setPriceData(client, done, data, res, callback);
   } else {
