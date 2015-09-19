@@ -191,16 +191,17 @@ function setCustomsLossData(client, done, data, res, callback) {
     customsQuery.on('row', function(row) {
       result = row;
     });
+    console.log(data);
     customsQuery.on('end', function() {
       if (!isNaN(result.allowed)) {
         data.customs_allowed_loss_amount = parseFloat(result.allowed);
       } else if (!isNaN(result.allowed_rate)) {
-        console.log('buraya girmesi lazimdi');
+        console.log(result);
         data.customs_allowed_loss_amount = parseFloat(result.allowed_rate) * data.loading_weight;
       }
       data.customs_loss_unit_price = result.unit_cost;
+      setPriceData(client, done, data, res, callback);
     });
-    setPriceData(client, done, data, res, callback);
   } else {
     setPriceData(client, done, data, res, callback);
   }
@@ -291,7 +292,16 @@ router.post('/api', function (req, res) {
 });
 
 function doCalculations(data) {
-
+  if (data.delivery_allowed_loss_amount < data.delivery_loss) {
+    data.delivery_loss_price = data.delivery_loss_unit_price * (data.delivery_loss - data.delivery_allowed_loss_amount);
+  } else {
+    data.delivery_loss_price = 0;
+  }
+  if (data.customs_allowed_loss_amount < Math.abs(data.customs_loss)) {
+    data.customs_loss_price = data.customs_loss_unit_price * Math.abs(data.customs_loss);
+  } else {
+    data.customs_loss_price = 0;
+  }
   return data;
 }
 
