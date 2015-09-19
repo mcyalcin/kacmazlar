@@ -124,7 +124,7 @@ $(document).ready(function () {
         {"data": "customs_weight", defaultContent:""},
         {"data": "delivery_weight", defaultContent:""},
         {"data": "allowed_loss_rate", defaultContent:""},
-        //{"data": "customs_allowed_loss_amount"},
+        {"data": "customs_allowed_loss_amount"},
         {"data": "customs_loss", defaultContent:""},
         {"data": "delivery_loss", defaultContent:""},
         {"data": "customs_loss_unit_price", defaultContent:""},
