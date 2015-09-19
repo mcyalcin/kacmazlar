@@ -118,6 +118,108 @@ function applyBusinessRulesThenPersist(data) {
   }
 }
 
+function setLoss(client, done, data, res, callback) {
+  if (data.loading_location && data.delivery_weight && data.customs_weight && data.loading_weight) {
+    // language=SQL
+    var locationQuery = client.query('SELECT country FROM locations WHERE name LIKE ($1)', [data.loading_location]);
+    var result = '';
+    locationQuery.on('row', function (row) {
+      result = row.country;
+    });
+    locationQuery.on('end', function () {
+      if (result === 'Irak' && data.delivery_weight && data.customs_weight) {
+        data.customs_loss = data.customs_weight - data.delivery_weight;
+      } else if (result === 'Türkiye' && data.customs_weight && data.loading_weight) {
+        data.customs_loss = data.loading_weight - data.customs_weight;
+      }
+      if (data.delivery_weight && data.loading_weight) {
+        data.delivery_loss = data.loading_weight - data.delivery_weight;
+      }
+      setFirm(client, done, data, res, callback)
+    });
+  } else {
+    setFirm(client, done, data, res, callback)
+  }
+}
+
+function setFirm(client, done, data, res, callback) {
+  if (data.tractor_plate_number) {
+    // language=SQL
+    var firmQuery = client.query('SELECT c2_holder.name AS name FROM vehicles vehicle \
+      LEFT JOIN firms c2_holder ON c2_holder.id = vehicle.c2_holder_firm\
+      WHERE vehicle.license_plate LIKE ($1)', [data.tractor_plate_number]);
+    var result = '';
+    firmQuery.on('row', function (row) {
+      result = row.name;
+    });
+    firmQuery.on('end', function () {
+      data.company_name = result;
+      setLossData(client, done, data, res, callback);
+    });
+  } else {
+    setLossData(client, done, data, res, callback);
+  }
+}
+
+function setLossData(client, done, data, res, callback) {
+  if (data.product && data.loading_weight) {
+    // language=SQL
+    var productQuery = client.query('SELECT * FROM products WHERE name LIKE ($1)', [data.product]);
+    var result = {};
+    productQuery.on('row', function (row) {
+      result = row;
+    });
+    productQuery.on('end', function () {
+      if (result.allowed_waste) {
+        data.delivery_allowed_loss_amount = result.allowed_waste;
+      } else if (result.allowed_waste_rate) {
+        data.delivery_allowed_loss_amount = result.allowed_waste_rate * data.loading_weight;
+      }
+      setCustomsLossData(client, done, data, res, callback);
+    });
+  } else {
+    setCustomsLossData(client, done, data, res, callback);
+  }
+}
+
+function setCustomsLossData(client, done, data, res, callback) {
+  if (data.product && data.loading_weight) {
+    // language=SQL
+    var customsQuery = client.query('SELECT * FROM customs_wastage_costs c LEFT JOIN products p ON c.product = p.id WHERE p.name LIKE ($1)', [data.product]);
+    var result = {};
+    customsQuery.on('row', function(row) {
+      result = row;
+    });
+    customsQuery.on('end', function() {
+      if (result.allowed) {
+        data.delivery_allowed_loss_amount = result.allowed;
+      } else if (result.allowed_rate) {
+        data.delivery_allowed_loss_amount = result.allowed_rate * data.loading_weight;
+      }
+    });
+    setPriceData(client, done, data, res, callback);
+  } else {
+    setPriceData(client, done, data, res, callback);
+  }
+}
+
+function setPriceData(client, done, data, res, callback) {
+  if (data.product && data.loading_location && data.delivery_location) {
+    // language=SQL
+    var priceQuery = client.query('SELECT * FROM transport_prices t LEFT JOIN products p WHERE t.product = p.id AND p.name like ($1) and t.from like ($2) and t.to like ($3)', [data.product, data.loading_location, data.delivery_location]);
+    var result = {};
+    priceQuery.on('row', function(row) {
+      result = row;
+    });
+    priceQuery.on('end', function() {
+      data.shipping_unit_price = result.unit_price;
+    });
+    callback(client, done, data, res, callback);
+  } else {
+    callback(client, done, data, res, callback);
+  }
+}
+
 router.post('/api', function (req, res) {
   var data = {
     loading_date: parseDate(req.body["data[loading_date]"]),
@@ -134,52 +236,30 @@ router.post('/api', function (req, res) {
     delivery_location: req.body["data[delivery_location]"],
     cmr_number: req.body["data[cmr_number]"],
     product: req.body["data[product]"],
-    loading_weight: (req.body["data[loading_weight]"] || undefined),
-    customs_weight: (req.body["data[customs_weight]"] || undefined),
-    delivery_weight: (req.body["data[delivery_weight]"] || undefined),
-    customs_loss: req.body["data[customs_loss]"],
-    delivery_loss: req.body["data[delivery_loss]"],
-    customs_loss_unit_price: req.body["data[customs_loss_unit_price]"],
-    delivery_loss_unit_price: req.body["data[delivery_loss_unit_price]"],
-    customs_loss_price: req.body["data[customs_loss_price]"],
-    delivery_loss_price: req.body["data[delivery_loss_price]"],
-    cmr_price: req.body["data[cmr_price]"],
-    shipping_unit_price: req.body["data[shipping_unit_price]"],
-    shipping_price: req.body["data[shipping_price]"],
-    customs_allowed_loss_amount: req.body["data[customs_allowed_loss_amount]"],
-    delivery_allowed_loss_amount: req.body["data[delivery_allowed_loss_amount]"],
-    transportation_unit_price: req.body["data[transportation_unit_price]"],
-    transportation_price: req.body["data[transportation_price]"]
+    loading_weight: parseFloat(req.body["data[loading_weight]"]),
+    customs_weight: parseFloat(req.body["data[customs_weight]"]),
+    delivery_weight: parseFloat(req.body["data[delivery_weight]"]),
+    customs_loss: parseFloat(req.body["data[customs_loss]"]),
+    delivery_loss: parseFloat(req.body["data[delivery_loss]"]),
+    customs_loss_unit_price: parseFloat(req.body["data[customs_loss_unit_price]"]),
+    delivery_loss_unit_price: parseFloat(req.body["data[delivery_loss_unit_price]"]),
+    customs_loss_price: parseFloat(req.body["data[customs_loss_price]"]),
+    delivery_loss_price: parseFloat(req.body["data[delivery_loss_price]"]),
+    cmr_price: parseFloat(req.body["data[cmr_price]"]),
+    shipping_unit_price: parseFloat(req.body["data[shipping_unit_price]"]),
+    shipping_price: parseFloat(req.body["data[shipping_price]"]),
+    customs_allowed_loss_amount: parseFloat(req.body["data[customs_allowed_loss_amount]"]),
+    delivery_allowed_loss_amount: parseFloat(req.body["data[delivery_allowed_loss_amount]"]),
+    net_price: parseFloat(req.body["data[net_price]"]),
+    transportation_unit_price: parseFloat(req.body["data[transportation_unit_price]"]),
+    transportation_price: parseFloat(req.body["data[transportation_price]"])
   };
   var action = req.body.action;
   if (action === 'create') {
-    if (data.loading_location) {
-      pg.connect(connectionString, function (err, client, done) {
-        // language=SQL
-        var locationQuery = client.query('SELECT country FROM locations WHERE name LIKE ($1)', [data.loading_location]);
-        var result = '';
-        locationQuery.on('row', function (row) {
-          result = row.country;
-        });
-        locationQuery.on('end', function () {
-          done();
-          if (result === 'Irak' && data.delivery_weight && data.customs_weight) {
-            data.customs_loss = data.customs_weight - data.delivery_weight;
-          } else if (result === 'Türkiye' && data.customs_weight && data.loading_weight) {
-            data.customs_loss = data.loading_weight - data.customs_weight;
-          }
-          if (data.delivery_weight && data.loading_weight) {
-            data.delivery_loss = data.loading_weight - data.delivery_weight;
-          }
-          insertShipment(client, done, data, res);
-        });
-        if (err) console.log(err);
-      });
-    } else {
-      pg.connect(connectionString, function (err, client, done) {
-        insertShipment(client, done, data, res);
-      });
-    }
+    pg.connect(connectionString, function (err, client, done) {
+      setLoss(client, done, data, res, insertShipment);
+      if (err) console.log(err);
+    });
   } else if (action === 'remove') {
     var ids = req.body['id[]'];
     pg.connect(connectionString, function (err, client, done) {
@@ -200,50 +280,35 @@ router.post('/api', function (req, res) {
       }
     });
   } else if (action === 'edit') {
-    if (data.loading_location) {
-      pg.connect(connectionString, function (err, client, done) {
-        // language=SQL
-        var locationQuery = client.query('SELECT country FROM locations WHERE name LIKE ($1)', [data.loading_location]);
-        var result = '';
-        locationQuery.on('row', function (row) {
-          result = row.country;
-          if (result == 'Irak' && data.delivery_weight && data.customs_weight) {
-            data.customs_loss = data.customs_weight - data.delivery_weight;
-          } else if (result == 'Türkiye' && data.customs_weight && data.loading_weight) {
-            data.customs_loss = data.loading_weight - data.customs_weight;
-          }
-          if (data.delivery_weight && data.loading_weight) {
-            data.delivery_loss = data.loading_weight - data.delivery_weight;
-          }
-          data.id = req.body.id;
-          updateShipment(client, done, data, res);
-        });
-        if (err) console.log(err);
-      });
-    } else {
-      data.id = req.body.id;
-      pg.connect(connectionString, function (err, client, done) {
-        updateShipment(client, done, data, res);
-      });
-    }
+    pg.connect(connectionString, function (err, client, done) {
+      setLoss(client, done, data, res, updateShipment);
+      if (err) console.log(err);
+    });
   }
 });
 
+function doCalculations(data) {
+  return data;
+}
+
 function insertShipment(client, done, data, res) {
   // language=SQL
+  data = doCalculations(data);
   var query = client.query('INSERT INTO shipments\
         (loading_date, delivery_date, cmr_date, payment_date, company_name, tractor_plate_number, trailer_plate_number, \
         driver, loading_location, delivery_location, cmr_number, product, loading_weight, customs_weight, delivery_weight,\
         customs_loss, delivery_loss, customs_loss_unit_price, delivery_loss_unit_price, customs_loss_price,\
-        delivery_loss_price, cmr_price, shipping_unit_price, shipping_price, net_price) \
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26) \
+        delivery_loss_price, cmr_price, shipping_unit_price, shipping_price, net_price, customs_entry_date,\
+        customs_exit_date, transportation_unit_price, transportation_price, customs_allowed_loss_amount, delivery_allowed_loss_amount) \
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31) \
         RETURNING *;', [
     data.loading_date, data.delivery_date, data.cmr_date, data.payment_date, data.company_name,
     data.tractor_plate_number, data.trailer_plate_number, data.driver, data.loading_location, data.delivery_location,
     data.cmr_number, data.product, data.loading_weight, data.customs_weight, data.delivery_weight,
     data.customs_loss, data.delivery_loss, data.customs_loss_unit_price, data.delivery_loss_unit_price,
     data.customs_loss_price, data.delivery_loss_price, data.cmr_price, data.shipping_unit_price, data.shipping_price,
-    data.net_price
+    data.net_price, data.customs_entry_date, data.customs_exit_date, data.transportation_unit_price, data.transportation_price,
+    data.customs_allowed_loss_amount, data.delivery_allowed_loss_amount
   ]);
   var result = {};
   query.on('row', function (row) {
