@@ -74,7 +74,7 @@ router.post('/api', function (req, res) {
       // language=SQL
       var query = client.query(
         'INSERT INTO customs_wastage_costs(product, allowed, unit_cost, start_date, end_date, allowed_rate) \
-           SELECT p.id, ($2), ($3), ($4), ($5)\
+           SELECT p.id, ($2), ($3), ($4), ($5), ($6)\
            FROM products AS p \
            WHERE p.name LIKE ($1)\
          RETURNING *',
