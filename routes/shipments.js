@@ -170,10 +170,10 @@ function setLossData(client, done, data, res, callback) {
       result = row;
     });
     productQuery.on('end', function () {
-      if (result.allowed_waste) {
-        data.delivery_allowed_loss_amount = result.allowed_waste;
-      } else if (result.allowed_waste_rate) {
-        data.delivery_allowed_loss_amount = result.allowed_waste_rate * data.loading_weight;
+      if (parseFloat(result.allowed_waste) != 'NaN') {
+        data.delivery_allowed_loss_amount = parseFloat(result.allowed_waste);
+      } else if (parseFloat(result.allowed_waste_rate) != 'NaN') {
+        data.delivery_allowed_loss_amount = parseFloat(result.allowed_waste_rate) * data.loading_weight;
       }
       setCustomsLossData(client, done, data, res, callback);
     });
@@ -191,10 +191,10 @@ function setCustomsLossData(client, done, data, res, callback) {
       result = row;
     });
     customsQuery.on('end', function() {
-      if (result.allowed) {
-        data.delivery_allowed_loss_amount = result.allowed;
-      } else if (result.allowed_rate) {
-        data.delivery_allowed_loss_amount = result.allowed_rate * data.loading_weight;
+      if (parseFloat(result.allowed) != 'NaN') {
+        data.delivery_allowed_loss_amount = parseFloat(result.allowed);
+      } else if (parseFloat(result.allowed_rate) != 'NaN') {
+        data.delivery_allowed_loss_amount = parseFloat(result.allowed_rate) * data.loading_weight;
       }
     });
     setPriceData(client, done, data, res, callback);
@@ -288,6 +288,7 @@ router.post('/api', function (req, res) {
 });
 
 function doCalculations(data) {
+
   return data;
 }
 
@@ -327,6 +328,7 @@ function insertShipment(client, done, data, res) {
 
 function updateShipment(client, done, data, res) {
   // language=SQL
+  data = doCalculations(data);
   var query = client.query('UPDATE shipments\
         SET loading_date=($1), delivery_date=($2), cmr_date=($3), payment_date=($4), company_name=($5),\
             tractor_plate_number=($6), trailer_plate_number=($7), driver=($8), loading_location=($9), delivery_location=($10),\
