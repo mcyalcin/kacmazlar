@@ -188,11 +188,11 @@ function setCustomsLossData(client, done, data, res, callback) {
     // language=SQL
     var customsQuery = client.query('SELECT * FROM customs_wastage_costs c LEFT JOIN products p ON c.product = p.id WHERE p.name LIKE ($1)', [data.product]);
     var result = {};
-    customsQuery.on('row', function(row) {
+    customsQuery.on('row', function (row) {
       result = row;
     });
     console.log(data);
-    customsQuery.on('end', function() {
+    customsQuery.on('end', function () {
       if (!isNaN(result.allowed)) {
         data.customs_allowed_loss_amount = parseFloat(result.allowed);
       } else if (!isNaN(result.allowed_rate)) {
@@ -210,15 +210,32 @@ function setCustomsLossData(client, done, data, res, callback) {
 function setPriceData(client, done, data, res, callback) {
   if (data.product && data.loading_location && data.delivery_location) {
     // language=SQL
-    var priceQuery = client.query('SELECT * FROM transport_prices t LEFT JOIN products p WHERE t.product = p.id AND p.name like ($1) and t.from like ($2) and t.to like ($3)', [data.product, data.loading_location, data.delivery_location]);
+    var priceQuery = client.query('SELECT * FROM transport_prices t LEFT JOIN products p WHERE t.product = p.id AND p.name LIKE ($1) AND t.from LIKE ($2) AND t.to LIKE ($3)', [data.product, data.loading_location, data.delivery_location]);
     var result = {};
-    priceQuery.on('row', function(row) {
+    priceQuery.on('row', function (row) {
       result = row;
     });
-    priceQuery.on('end', function() {
+    priceQuery.on('end', function () {
       data.shipping_unit_price = result.unit_price;
     });
-    callback(client, done, data, res, callback);
+    setCmrData(client, done, data, res, callback);
+  } else {
+    setCmrData(client, done, data, res, callback);
+  }
+}
+
+function setCmrData(client, done, data, res, callback) {
+  if (data.product) {
+    // language=SQL
+    var cmrQuery = client.query('SELECT * FROM cmr_prices c LEFT JOIN products p ON c.product = p.id WHERE p.name LIKE ($1) AND c.end_date IS NULL', [data.product]);
+    var result = {};
+    cmrQuery.on('row', function (row) {
+      result = row;
+    });
+    cmrQuery.on('end', function () {
+      data.cmr_price = result.price;
+      callback(client, done, data, res, callback);
+    });
   } else {
     callback(client, done, data, res, callback);
   }
