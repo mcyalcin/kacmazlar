@@ -1,3 +1,4 @@
+/* global $ */
 $(document).ready(function () {
   $.getJSON('shipments/api/options', function (data) {
     editor = new $.fn.dataTable.Editor({
@@ -29,7 +30,7 @@ $(document).ready(function () {
       table: "#shipments",
       // TODO: Field names are to be changed
       fields: [{
-        label: 'CMR Numarasi:',
+        label: 'CMR Numarası:',
         name: 'cmr_number'
       }, {
         label: 'CMR Tarihi:',
@@ -62,34 +63,26 @@ $(document).ready(function () {
         type: 'select',
         options: data.driverOptions
       }, {
-        label: 'Yukleme Yeri',
+        label: 'Yükleme Yeri',
         name: 'loading_location',
         type: 'select',
         options: data.locationOptions
       }, {
-        label: 'Bosaltma Yeri',
-        name: 'bosaltma_yeri',
+        label: 'Boşaltma Yeri',
+        name: 'delivery_location',
         type: 'select',
         options: data.locationOptions
       }, {
-        label: 'Urun Cinsi:',
+        label: 'Ürün Cinsi:',
         name: 'product',
         type: 'select',
         options: data.productOptions
       }, {
-        label: 'Yukleme Tonaji',
+        label: 'Yükleme Tonaji',
         name: 'loading_weight'
       }, {
-        label: 'Gumruk Tonaji',
-        name: 'customs_weight'
-      }, {
-        label: 'Bosaltim Tonaji',
+        label: 'Bosaltım Tonaji',
         name: 'delivery_weight'
-      }, {
-        label: 'Hakedis Tarihi:',
-        name: 'payment_date',
-        type: 'date',
-        dateFormat: 'd.m.yy'
       }]
     });
 
@@ -108,32 +101,30 @@ $(document).ready(function () {
       "scrollX": true,
       "columns": [
         {"data": "loading_date", defaultContent:""},
+        {"data": "customs_entry_date", defaultContent:""},
+        {"data": "customs_exit_date", defaultContent:""},
         {"data": "delivery_date", defaultContent:""},
         {"data": "company_name", defaultContent:""},
         {"data": "tractor_plate_number", defaultContent:""},
         {"data": "trailer_plate_number", defaultContent:""},
         {"data": "driver", defaultContent:""},
+        {"data": "product", defaultContent:""},
         {"data": "loading_location", defaultContent:""},
         {"data": "delivery_location", defaultContent:""},
         {"data": "cmr_date", defaultContent:""},
         {"data": "cmr_number", defaultContent:""},
-        {"data": "product", defaultContent:""},
         {"data": "loading_weight", defaultContent:""},
         {"data": "customs_weight", defaultContent:""},
         {"data": "delivery_weight", defaultContent:""},
-        {"data": "allowed_loss_rate", defaultContent:""},
-        //{"data": "customs_allowed_loss_amount"},
+        {"data": "customs_allowed_loss_amount", defaultContent:""},
         {"data": "customs_loss", defaultContent:""},
-        {"data": "delivery_loss", defaultContent:""},
         {"data": "customs_loss_unit_price", defaultContent:""},
-        {"data": "delivery_loss_unit_price", defaultContent:""},
         {"data": "customs_loss_price", defaultContent:""},
+        {"data": "delivery_allowed_loss_amount", defaultContent:""},
+        {"data": "delivery_loss", defaultContent:""},
+        {"data": "delivery_loss_unit_price", defaultContent:""},
         {"data": "delivery_loss_price", defaultContent:""},
-        {"data": "cmr_price", defaultContent:""},
-        {"data": "shipping_unit_price", defaultContent:""},
-        {"data": "shipping_price", defaultContent:""},
-        {"data": "net_price", defaultContent:""},
-        {"data": "payment_date", defaultContent:""}
+        {"data": "cmr_price", defaultContent:""}
       ],
       tableTools: {
         sRowSelect: "os",

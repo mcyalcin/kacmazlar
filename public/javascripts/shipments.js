@@ -43,6 +43,16 @@ $(document).ready(function () {
         type: 'date',
         dateFormat: 'd.m.yy'
       }, {
+        label: 'Gümrüğe Giriş Tarihi:',
+        name: 'customs_entry_date',
+        type: 'date',
+        dateFormat: 'd.m.yy'
+      }, {
+        label: 'Gümrükten Çıkış Tarihi:',
+        name: 'customs_exit_date',
+        type: 'date',
+        dateFormat: 'd.m.yy'
+      }, {
         label: 'Boşaltma Tarihi:',
         name: 'delivery_date',
         type: 'date',

@@ -2,7 +2,15 @@
 <html>
 <head>
   <% include partials/header.ejs %>
+  <% if (user.role == 'admin') { %>
   <script src="javascripts/shipments.js"></script>
+  <% } else if (user.role == 'customs') { %>
+  <script src="javascripts/shipments-customs.js"></script>
+  <% } else if (user.role == 'field') { %>
+  <script src="javascripts/shipments-field.js"></script>
+  <% } else { %>
+  <script src="javascripts/shipments-obs.js"></script>
+  <% } %>
 </head>
 <body>
 <% include partials/nav.ejs %>
@@ -35,12 +43,14 @@
       <th>Ürün Fire Fiyatı</th>
       <th>Ürün Cezası</th>
       <th>CMR Bedeli</th>
+      <% if (user.role == 'admin') { %>
       <th>Nakliye Fiyatı</th>
       <th>Nakliye Tutarı</th>
       <th>Net Hakediş Tutarı</th>
       <th>Hakediş Tarihi</th>
       <th>Navlun Fiyatı</th>
       <th>Navlun Tutarı</th>
+      <% } %>
     </tr>
     </thead>
   </table>
