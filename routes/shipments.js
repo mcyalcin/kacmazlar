@@ -161,12 +161,10 @@ function setCustomsLossData(client, done, data, res, callback) {
     customsQuery.on('row', function (row) {
       result = row;
     });
-    console.log(data);
     customsQuery.on('end', function () {
       if (!isNaN(result.allowed)) {
         data.customs_allowed_loss_amount = parseFloat(result.allowed);
       } else if (!isNaN(result.allowed_rate)) {
-        console.log(result);
         data.customs_allowed_loss_amount = parseFloat(result.allowed_rate) * data.loading_weight;
       }
       data.customs_loss_unit_price = result.unit_cost;
@@ -180,15 +178,28 @@ function setCustomsLossData(client, done, data, res, callback) {
 function setPriceData(client, done, data, res, callback) {
   if (data.product && data.loading_location && data.delivery_location) {
     // language=SQL
-    var priceQuery = client.query('SELECT * FROM transport_prices t LEFT JOIN products p WHERE t.product = p.id AND p.name LIKE ($1) AND t.from LIKE ($2) AND t.to LIKE ($3)', [data.product, data.loading_location, data.delivery_location]);
+    console.log(data);
+    var priceQuery = client.query('\
+      SELECT * FROM subcontractor_transport_prices t \
+        LEFT JOIN products p ON t.product = p.id \
+        LEFT JOIN firms f ON t.firm = f.id \
+        LEFT JOIN locations fr ON t.from = fr.id \
+        LEFT JOIN locations o ON t.to = o.id \
+      WHERE \
+        p.name LIKE ($1) AND \
+        fr.name LIKE ($2) AND \
+        o.name LIKE ($3) AND \
+        f.name LIKE ($4)',
+      [data.product, data.loading_location, data.delivery_location, data.company_name]);
     var result = {};
     priceQuery.on('row', function (row) {
       result = row;
+      console.log(row);
     });
     priceQuery.on('end', function () {
       data.shipping_unit_price = result.unit_price;
+      setCmrData(client, done, data, res, callback);
     });
-    setCmrData(client, done, data, res, callback);
   } else {
     setCmrData(client, done, data, res, callback);
   }
@@ -289,6 +300,10 @@ function doCalculations(data) {
   } else {
     data.customs_loss_price = 0;
   }
+  if (data.shipping_unit_price && !data.shipping_price) {
+    data.shipping_price = data.shipping_unit_price * data.loading_weight;
+  }
+  data.net_price = data.shipping_price - data.customs_loss_price - data.delivery_loss_price - data.cmr_price;
   return data;
 }
 

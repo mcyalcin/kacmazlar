@@ -68,7 +68,7 @@ $(document).ready(function () {
         options: data.locationOptions
       }, {
         label: 'Bosaltma Yeri',
-        name: 'bosaltma_yeri',
+        name: 'delivery_location',
         type: 'select',
         options: data.locationOptions
       }, {
