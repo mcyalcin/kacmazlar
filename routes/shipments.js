@@ -24,7 +24,7 @@ router.get('/api/options', function (req, res) {
     // language=SQL
     var plateQuery = client.query('SELECT license_plate, type FROM vehicles ORDER BY license_plate');
     plateQuery.on('row', function (row) {
-      if (row.type === 'Dorse') options.trailerPlateOptions.push(row.license_plate);
+      if (row.type.toUpperCase() === 'DORSE') options.trailerPlateOptions.push(row.license_plate);
       else options.tractorPlateOptions.push(row.license_plate);
     });
     plateQuery.on('end', function () {
@@ -87,36 +87,6 @@ router.get('/api', function (req, res) {
     });
   });
 });
-
-function applyBusinessRulesThenPersist(data) {
-  if (data.loading_location) {
-    pg.connect(connectionString, function (err, client, done) {
-      console.log('bla');
-      // language=SQL
-      var query = client.query('SELECT country FROM locations WHERE name LIKE ($1)', [data.loading_location]);
-      console.log('yada');
-      var result;
-      query.on('row', function (row) {
-        result = row.country;
-      });
-      query.on('end', function () {
-        done();
-        if (result == 'Irak' && data.delivery_weight && data.customs_weight) {
-          data.customs_loss = data.customs_weight - data.delivery_weight;
-        } else if (result == 'Türkiye' && data.customs_weight && data.loading_weight) {
-          data.customs_loss = data.loading_weight - data.customs_weight;
-        }
-        if (data.delivery_weight && data.loading_weight) {
-          data.delivery_loss = data.delivery_weight - data.loading_weight;
-        }
-        persist(data);
-      });
-      if (err) console.log(err);
-    });
-  } else {
-    persist(data);
-  }
-}
 
 function setLoss(client, done, data, res, callback) {
   if (data.loading_location && data.delivery_weight && data.customs_weight && data.loading_weight) {
