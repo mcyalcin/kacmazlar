@@ -194,14 +194,14 @@ router.post('/api', function (req, res) {
         //language=SQL
         var query = client.query('\
         UPDATE vehicles AS v\
-        SET type = f.type,\
-        license_plate = f.license_plate,\
+        SET type = $1,\
+        license_plate = $2,\
         subcontractor_firm = f.sid, \
         c2_holder_firm = f.cid, \
         license_holder_firm = f.lid,\
         permission_status = ($7) \
         FROM (\
-          SELECT ($1::TEXT) AS type, ($2::TEXT) AS license_plate, c.id AS cid, l.id AS lid, s.id AS sid\
+          SELECT c.id AS cid, l.id AS lid, s.id AS sid\
           FROM firms AS c, firms AS l, firms AS s\
           WHERE c.name LIKE ($5) AND l.name LIKE ($4) AND s.name LIKE ($3)\
         ) f\
