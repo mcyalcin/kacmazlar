@@ -1,3 +1,4 @@
+/* global $ */
 $(document).ready(function () {
   $.getJSON('shipments/api/options', function (data) {
     editor = new $.fn.dataTable.Editor({
@@ -29,7 +30,7 @@ $(document).ready(function () {
       table: "#shipments",
       // TODO: Field names are to be changed
       fields: [{
-        label: 'CMR Numarasi:',
+        label: 'CMR Numarası:',
         name: 'cmr_number'
       }, {
         label: 'CMR Tarihi:',
@@ -62,31 +63,31 @@ $(document).ready(function () {
         type: 'select',
         options: data.driverOptions
       }, {
-        label: 'Yukleme Yeri',
+        label: 'Yükleme Yeri',
         name: 'loading_location',
         type: 'select',
         options: data.locationOptions
       }, {
-        label: 'Bosaltma Yeri',
+        label: 'Boşaltma Yeri',
         name: 'delivery_location',
         type: 'select',
         options: data.locationOptions
       }, {
-        label: 'Urun Cinsi:',
+        label: 'Ürün Cinsi:',
         name: 'product',
         type: 'select',
         options: data.productOptions
       }, {
-        label: 'Yukleme Tonaji',
+        label: 'Yükleme Tonaji',
         name: 'loading_weight'
       }, {
-        label: 'Gumruk Tonaji',
+        label: 'Gümrük Tonaji',
         name: 'customs_weight'
       }, {
-        label: 'Bosaltim Tonaji',
+        label: 'Bosaltım Tonaji',
         name: 'delivery_weight'
       }, {
-        label: 'Hakedis Tarihi:',
+        label: 'Hakediş Tarihi:',
         name: 'payment_date',
         type: 'date',
         dateFormat: 'd.m.yy'
