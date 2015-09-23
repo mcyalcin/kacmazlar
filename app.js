@@ -18,6 +18,7 @@ var products = require('./routes/products');
 var vehicles = require('./routes/vehicles');
 var shipments = require('./routes/shipments');
 var transportFees = require('./routes/transportFees');
+var subcontractorTransportFees = require('./routes/subcontractorTransportFees');
 var customs = require('./routes/customs');
 var login = require('./routes/login');
 
@@ -53,6 +54,7 @@ app.use('/products', products);
 app.use('/vehicles', vehicles);
 app.use('/shipments', shipments);
 app.use('/transport_fees', transportFees);
+app.use('/subcontractor_transport_fees', subcontractorTransportFees);
 app.use('/customs', customs);
 app.use('/users', users);
 app.use('/login', login);
