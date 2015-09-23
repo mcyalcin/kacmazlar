@@ -1,26 +1,12 @@
 /* global $ */
 $(document).ready(function () {
   $.getJSON('shipments/api/options', function (data) {
-    editor = new $.fn.dataTable.Editor({
+    var loadingEditor = new $.fn.dataTable.Editor({
       i18n: {
         create: {
           button: "Yarat",
           title: "Yeni Kayıt Yarat",
           submit: "Yarat"
-        },
-        edit: {
-          button: "Değiştir",
-          title: "Kaydı Değiştir",
-          submit: "Değiştir"
-        },
-        remove: {
-          button: "Sil",
-          title: "Sil",
-          submit: "Sil",
-          confirm: {
-            _: "%d kaydı silmek istediğinizden emin misiniz?",
-            1: "Kaydı silmek istediğinizden emin misiniz?"
-          }
         },
         error: {
           system: "Bir hata oluştu, sistem yöneticisine başvurun."
@@ -28,7 +14,6 @@ $(document).ready(function () {
       },
       ajax: "shipments/api",
       table: "#shipments",
-      // TODO: Field names are to be changed
       fields: [{
         label: 'CMR Numarası:',
         name: 'cmr_number'
@@ -40,11 +25,6 @@ $(document).ready(function () {
       }, {
         label: 'Yükleme Tarihi:',
         name: 'loading_date',
-        type: 'date',
-        dateFormat: 'd.m.yy'
-      }, {
-        label: 'Boşaltma Tarihi:',
-        name: 'delivery_date',
         type: 'date',
         dateFormat: 'd.m.yy'
       }, {
@@ -78,18 +58,48 @@ $(document).ready(function () {
         type: 'select',
         options: data.productOptions
       }, {
-        label: 'Yükleme Tonaji',
+        label: 'Yükleme Tonajı',
         name: 'loading_weight'
-      }, {
-        label: 'Bosaltım Tonaji',
-        name: 'delivery_weight'
       }]
     });
 
-    // TODO: Consider adding inline editing.
-    //$('#shipments').on('click', 'tbody td:not(:first-child)', function (e) {
-    //  editor.inline(this);
-    //});
+    var deliveryEditor = new $.fn.dataTable.Editor({
+      i18n: {
+        edit: {
+          button: "Değiştir",
+          title: "Kaydı Değiştir",
+          submit: "Değiştir"
+        },
+        remove: {
+          button: "Sil",
+          title: "Sil",
+          submit: "Sil",
+          confirm: {
+            _: "%d kaydı silmek istediğinizden emin misiniz?",
+            1: "Kaydı silmek istediğinizden emin misiniz?"
+          }
+        },
+        error: {
+          system: "Bir hata oluştu, sistem yöneticisine başvurun."
+        }
+      },
+      ajax: "shipments/api",
+      table: "#shipments",
+      fields: [{
+        label: 'Bosaltım Tonajı',
+        name: 'delivery_weight'
+      }, {
+        label: 'Boşaltma Tarihi:',
+        name: 'delivery_date',
+        type: 'date',
+        dateFormat: 'd.m.yy'
+      }, {
+        label: 'Boşaltma Yeri',
+        name: 'delivery_location',
+        type: 'select',
+        options: data.locationOptions
+      }]
+    });
 
     $('#shipments').DataTable({
       lengthMenu: [[10, 50, -1], [10, 50, 'Tüm']],
@@ -130,9 +140,8 @@ $(document).ready(function () {
         sRowSelect: "os",
         sSwfPath: "/swf/copy_csv_xls_pdf.swf",
         aButtons: [
-          {sExtends: "editor_create", editor: editor},
-          {sExtends: "editor_edit", editor: editor},
-          {sExtends: "editor_remove", editor: editor},
+          {sExtends: "editor_create", editor: loadingEditor},
+          {sExtends: "editor_edit", editor: deliveryEditor},
           {
             sExtends: "collection",
             sButtonText: "Kaydet",

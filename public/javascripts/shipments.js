@@ -88,13 +88,13 @@ $(document).ready(function () {
         type: 'select',
         options: data.productOptions
       }, {
-        label: 'Yükleme Tonaji',
+        label: 'Yükleme Tonajı',
         name: 'loading_weight'
       }, {
-        label: 'Gümrük Tonaji',
+        label: 'Gümrük Tonajı',
         name: 'customs_weight'
       }, {
-        label: 'Bosaltım Tonaji',
+        label: 'Bosaltım Tonajı',
         name: 'delivery_weight'
       }, {
         label: 'Hakediş Tarihi:',

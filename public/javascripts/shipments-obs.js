@@ -1,9 +1,5 @@
 /* global $ */
 $(document).ready(function () {
-  // TODO: Consider adding inline editing.
-  //$('#shipments').on('click', 'tbody td:not(:first-child)', function (e) {
-  //  editor.inline(this);
-  //});
   $('#shipments').DataTable({
     lengthMenu: [[10, 50, -1], [10, 50, 'Tüm']],
     language: {
