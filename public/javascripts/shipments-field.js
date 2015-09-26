@@ -8,6 +8,20 @@ $(document).ready(function () {
           title: "Yeni Kayıt Yarat",
           submit: "Yarat"
         },
+        edit: {
+          button: "Değiştir",
+          title: "Kaydı Değiştir",
+          submit: "Değiştir"
+        },
+        remove: {
+          button: "Sil",
+          title: "Sil",
+          submit: "Sil",
+          confirm: {
+            _: "%d kaydı silmek istediğinizden emin misiniz?",
+            1: "Kaydı silmek istediğinizden emin misiniz?"
+          }
+        },
         error: {
           system: "Bir hata oluştu, sistem yöneticisine başvurun."
         }
@@ -65,6 +79,11 @@ $(document).ready(function () {
 
     var deliveryEditor = new $.fn.dataTable.Editor({
       i18n: {
+        create: {
+          button: "Yarat",
+          title: "Yeni Kayıt Yarat",
+          submit: "Yarat"
+        },
         edit: {
           button: "Değiştir",
           title: "Kaydı Değiştir",
