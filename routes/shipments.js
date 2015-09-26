@@ -79,6 +79,8 @@ router.get('/api', function (req, res) {
       row.delivery_date = formatDate(row.delivery_date);
       row.cmr_date = formatDate(row.cmr_date);
       row.payment_date = formatDate(row.payment_date);
+      row.customs_entry_date = formatDate(row.customs_entry_date);
+      row.customs_exit_date = formatDate(row.customs_exit_date);
       results.push(row);
     });
     query.on('end', function () {
@@ -89,7 +91,7 @@ router.get('/api', function (req, res) {
 });
 
 function setLoss(client, done, data, res, callback) {
-  if (data.loading_location && data.delivery_weight && data.customs_weight && data.loading_weight) {
+  if (data.loading_location) {
     // language=SQL
     var locationQuery = client.query('SELECT country FROM locations WHERE name LIKE ($1)', [data.loading_location]);
     var result = '';
@@ -222,6 +224,7 @@ function setCmrData(client, done, data, res, callback) {
   }
 }
 
+// TODO: Implement authorization
 router.post('/api', function (req, res) {
   var data = {
     loading_date: parseDate(req.body["data[loading_date]"]),
@@ -282,10 +285,59 @@ router.post('/api', function (req, res) {
       }
     });
   } else if (action === 'edit') {
-    pg.connect(connectionString, function (err, client, done) {
-      setLoss(client, done, data, res, updateShipment);
-      if (err) console.log(err);
-    });
+    data.id = req.body.id;
+    if (req.user.role == 'admin') {
+      pg.connect(connectionString, function (err, client, done) {
+        setLoss(client, done, data, res, updateShipment);
+        if (err) console.log(err);
+      });
+    } else if (req.user.role == 'customs') {
+      pg.connect(connectionString, function (err, client, done) {
+        // language=SQL
+        var query = client.query('select * from shipments where id=($1)', [data.id]);
+        var result = {};
+        query.on('row', function (row) {
+          row.DT_RowId = row.id;
+          row.loading_date = formatDate(row.loading_date);
+          row.delivery_date = formatDate(row.delivery_date);
+          row.cmr_date = formatDate(row.cmr_date);
+          row.payment_date = formatDate(row.payment_date);
+          row.customs_entry_date = formatDate(row.customs_entry_date);
+          row.customs_exit_date = formatDate(row.customs_exit_date);
+          result = row;
+          result.customs_weight = data.customs_weight;
+          result.customs_entry_date = data.customs_entry_date;
+          result.customs_exit_date = data.customs_exit_date;
+        });
+        query.on('end', function() {
+          setLoss(client, done, result, res, updateShipment);
+          if (err) console.log(err);
+        });
+      });
+    } else if (req.user.role == 'field') {
+      pg.connect(connectionString, function (err, client, done) {
+        // language=SQL
+        var query = client.query('select * from shipments where id=($1)', [data.id]);
+        var result = {};
+        query.on('row', function (row) {
+          row.DT_RowId = row.id;
+          row.loading_date = formatDate(row.loading_date);
+          row.delivery_date = formatDate(row.delivery_date);
+          row.cmr_date = formatDate(row.cmr_date);
+          row.payment_date = formatDate(row.payment_date);
+          row.customs_entry_date = formatDate(row.customs_entry_date);
+          row.customs_exit_date = formatDate(row.customs_exit_date);
+          result = row;
+          result.delivery_weight = data.delivery_weight;
+          result.delivery_date = data.delivery_date;
+          result.delivery_location = data.delivery_location;
+        });
+        query.on('end', function() {
+          setLoss(client, done, result, res, updateShipment);
+          if (err) console.log(err);
+        });
+      });
+    }
   }
 });
 
@@ -308,8 +360,8 @@ function doCalculations(data) {
 }
 
 function insertShipment(client, done, data, res) {
-  // language=SQL
   data = doCalculations(data);
+  // language=SQL
   var query = client.query('INSERT INTO shipments\
         (loading_date, delivery_date, cmr_date, payment_date, company_name, tractor_plate_number, trailer_plate_number, \
         driver, loading_location, delivery_location, cmr_number, product, loading_weight, customs_weight, delivery_weight,\
@@ -333,6 +385,8 @@ function insertShipment(client, done, data, res) {
     row.delivery_date = formatDate(row.delivery_date);
     row.cmr_date = formatDate(row.cmr_date);
     row.payment_date = formatDate(row.payment_date);
+    row.customs_entry_date = formatDate(row.customs_entry_date);
+    row.customs_exit_date = formatDate(row.customs_exit_date);
     result = row;
   });
   query.on('end', function () {
@@ -341,24 +395,82 @@ function insertShipment(client, done, data, res) {
   });
 }
 
+//function updateCustoms(client, done, data, res) {
+//  data = doCalculations(data);
+//  // language=SQL
+//  var query = client.query('UPDATE shipments\
+//        SET \
+//          customs_weight=($1), \
+//          customs_entry_date=($2),\
+//          customs_exit_date=($3), \
+//          customs_loss=($4), \
+//          customs_loss_price=($5)\
+//        WHERE id=($6)\
+//        RETURNING *;', [
+//    data.customs_weight, data.customs_entry_date, data.customs_exit_date,
+//    data.customs_loss,
+//    data.customs_loss_price,
+//    data.id
+//  ]);
+//  var result = {};
+//  query.on('row', function (row) {
+//    row.DT_RowId = row.id;
+//    row.loading_date = formatDate(row.loading_date);
+//    row.delivery_date = formatDate(row.delivery_date);
+//    row.cmr_date = formatDate(row.cmr_date);
+//    row.payment_date = formatDate(row.payment_date);
+//    row.customs_entry_date = formatDate(row.customs_entry_date);
+//    row.customs_exit_date = formatDate(row.customs_exit_date);
+//    console.log(row);
+//    result = row;
+//  });
+//  query.on('end', function () {
+//    done();
+//    return res.json(result);
+//  });
+//}
+
 function updateShipment(client, done, data, res) {
-  // language=SQL
   data = doCalculations(data);
+  // TODO: fix the update statement
+  // language=SQL
   var query = client.query('UPDATE shipments\
-        SET loading_date=($1), delivery_date=($2), cmr_date=($3), payment_date=($4), company_name=($5),\
-            tractor_plate_number=($6), trailer_plate_number=($7), driver=($8), loading_location=($9), delivery_location=($10),\
-            cmr_number=($11), product=($12), loading_weight=($13), customs_weight=($14), delivery_weight=($15), \
-            customs_loss=($17), delivery_loss=($18), customs_loss_unit_price=($19), delivery_loss_unit_price=($20), \
-            customs_loss_price=($21), delivery_loss_price=($22), cmr_price=($23), shipping_unit_price=($24), shipping_price=($25), \
-            net_price=($26)\
-        WHERE id=($27)\
+        SET \
+          loading_date=($1), \
+          delivery_date=($2), \
+          cmr_date=($3), \
+          payment_date=($4), \
+          company_name=($5),\
+          tractor_plate_number=($6), \
+          trailer_plate_number=($7), \
+          driver=($8), \
+          loading_location=($9), \
+          delivery_location=($10),\
+          cmr_number=($11), \
+          product=($12), \
+          loading_weight=($13), \
+          customs_weight=($14), \
+          delivery_weight=($15), \
+          customs_loss=($16), \
+          delivery_loss=($17), \
+          customs_loss_unit_price=($18), \
+          delivery_loss_unit_price=($19), \
+          customs_loss_price=($20), \
+          delivery_loss_price=($21), \
+          cmr_price=($22), \
+          shipping_unit_price=($23), \
+          shipping_price=($24), \
+          net_price=($25),\
+          customs_entry_date=($27),\
+          customs_exit_date=($28)\
+        WHERE id=($26)\
         RETURNING *;', [
     data.loading_date, data.delivery_date, data.cmr_date, data.payment_date, data.company_name,
     data.tractor_plate_number, data.trailer_plate_number, data.driver, data.loading_location, data.delivery_location,
     data.cmr_number, data.product, data.loading_weight, data.customs_weight, data.delivery_weight,
     data.customs_loss, data.delivery_loss, data.customs_loss_unit_price, data.delivery_loss_unit_price,
     data.customs_loss_price, data.delivery_loss_price, data.cmr_price, data.shipping_unit_price, data.shipping_price,
-    data.net_price, data.id
+    data.net_price, data.id, data.customs_entry_date, data.customs_exit_date
   ]);
   var result = {};
   query.on('row', function (row) {
@@ -367,6 +479,8 @@ function updateShipment(client, done, data, res) {
     row.delivery_date = formatDate(row.delivery_date);
     row.cmr_date = formatDate(row.cmr_date);
     row.payment_date = formatDate(row.payment_date);
+    row.customs_entry_date = formatDate(row.customs_entry_date);
+    row.customs_exit_date = formatDate(row.customs_exit_date);
     console.log(row);
     result = row;
   });

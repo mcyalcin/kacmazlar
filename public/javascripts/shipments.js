@@ -28,7 +28,6 @@ $(document).ready(function () {
       },
       ajax: "shipments/api",
       table: "#shipments",
-      // TODO: Field names are to be changed
       fields: [{
         label: 'CMR Numarası:',
         name: 'cmr_number'
@@ -101,6 +100,10 @@ $(document).ready(function () {
         name: 'payment_date',
         type: 'date',
         dateFormat: 'd.m.yy'
+      }, {
+        label: 'Firma Adı:',
+        name: 'company_name',
+        type: 'hidden'
       }]
     });
 

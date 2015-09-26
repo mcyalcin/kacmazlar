@@ -26,13 +26,64 @@ $(document).ready(function () {
       name: 'customs_exit_date',
       type: 'date',
       dateFormat: 'd.m.yy'
+    }, {
+      label: 'CMR Numarası:',
+      name: 'cmr_number',
+      type: 'hidden'
+    }, {
+      label: 'CMR Tarihi:',
+      name: 'cmr_date',
+      type: 'hidden'
+    }, {
+      label: 'Yükleme Tarihi:',
+      name: 'loading_date',
+      type: 'hidden'
+    }, {
+      label: 'Boşaltma Tarihi:',
+      name: 'delivery_date',
+      type: 'hidden'
+    }, {
+      label: 'Çekici Plakası:',
+      name: 'tractor_plate_number',
+      type: 'hidden'
+    }, {
+      label: 'Dorse Plakası:',
+      name: 'trailer_plate_number',
+      type: 'hidden'
+    }, {
+      label: 'Şöför:',
+      name: 'driver',
+      type: 'hidden'
+    }, {
+      label: 'Yükleme Yeri',
+      name: 'loading_location',
+      type: 'hidden'
+    }, {
+      label: 'Boşaltma Yeri',
+      name: 'delivery_location',
+      type: 'hidden'
+    }, {
+      label: 'Ürün Cinsi:',
+      name: 'product',
+      type: 'hidden'
+    }, {
+      label: 'Yükleme Tonajı',
+      name: 'loading_weight',
+      type: 'hidden'
+    }, {
+      label: 'Bosaltım Tonajı',
+      name: 'delivery_weight',
+      type: 'hidden'
+    }, {
+      label: 'Hakediş Tarihi:',
+      name: 'payment_date',
+      type: 'hidden'
+    }, {
+      label: 'Firma Adı:',
+      name: 'company_name',
+      type: 'hidden'
     }]
   });
-
-  // TODO: Consider adding inline editing.
-  //$('#shipments').on('click', 'tbody td:not(:first-child)', function (e) {
-  //  editor.inline(this);
-  //});
 
   $('#shipments').DataTable({
     lengthMenu: [[10, 50, -1], [10, 50, 'Tüm']],
