@@ -111,7 +111,7 @@ $(document).ready(function () {
     //$('#shipments').on('click', 'tbody td:not(:first-child)', function (e) {
     //  editor.inline(this);
     //});
-
+    //$.fn.dataTable.moment('D\.M\.YYYY');
     $('#shipments').DataTable({
       lengthMenu: [[10, 50, -1], [10, 50, 'Tüm']],
       language: {

@@ -252,6 +252,10 @@ function setDueData(client, done, data, res, callback) {
   }
 }
 
+function parseNumber(x) {
+  return parseFloat(x.replace(/,/,'.'));
+}
+
 // TODO: Implement authorization
 router.post('/api', function (req, res) {
   var data = {
@@ -269,23 +273,23 @@ router.post('/api', function (req, res) {
     delivery_location: req.body["data[delivery_location]"],
     cmr_number: req.body["data[cmr_number]"],
     product: req.body["data[product]"],
-    loading_weight: parseFloat(req.body["data[loading_weight]"]),
-    customs_weight: parseFloat(req.body["data[customs_weight]"]),
-    delivery_weight: parseFloat(req.body["data[delivery_weight]"]),
-    customs_loss: parseFloat(req.body["data[customs_loss]"]),
-    delivery_loss: parseFloat(req.body["data[delivery_loss]"]),
-    customs_loss_unit_price: parseFloat(req.body["data[customs_loss_unit_price]"]),
-    delivery_loss_unit_price: parseFloat(req.body["data[delivery_loss_unit_price]"]),
-    customs_loss_price: parseFloat(req.body["data[customs_loss_price]"]),
-    delivery_loss_price: parseFloat(req.body["data[delivery_loss_price]"]),
-    cmr_price: parseFloat(req.body["data[cmr_price]"]),
-    shipping_unit_price: parseFloat(req.body["data[shipping_unit_price]"]),
-    shipping_price: parseFloat(req.body["data[shipping_price]"]),
-    customs_allowed_loss_amount: parseFloat(req.body["data[customs_allowed_loss_amount]"]),
-    delivery_allowed_loss_amount: parseFloat(req.body["data[delivery_allowed_loss_amount]"]),
-    net_price: parseFloat(req.body["data[net_price]"]),
-    transportation_unit_price: parseFloat(req.body["data[transportation_unit_price]"]),
-    transportation_price: parseFloat(req.body["data[transportation_price]"])
+    loading_weight: parseNumber(req.body["data[loading_weight]"]),
+    customs_weight: parseNumber(req.body["data[customs_weight]"]),
+    delivery_weight: parseNumber(req.body["data[delivery_weight]"]),
+    customs_loss: parseNumber(req.body["data[customs_loss]"]),
+    delivery_loss: parseNumber(req.body["data[delivery_loss]"]),
+    customs_loss_unit_price: parseNumber(req.body["data[customs_loss_unit_price]"]),
+    delivery_loss_unit_price: parseNumber(req.body["data[delivery_loss_unit_price]"]),
+    customs_loss_price: parseNumber(req.body["data[customs_loss_price]"]),
+    delivery_loss_price: parseNumber(req.body["data[delivery_loss_price]"]),
+    cmr_price: parseNumber(req.body["data[cmr_price]"]),
+    shipping_unit_price: parseNumber(req.body["data[shipping_unit_price]"]),
+    shipping_price: parseNumber(req.body["data[shipping_price]"]),
+    customs_allowed_loss_amount: parseNumber(req.body["data[customs_allowed_loss_amount]"]),
+    delivery_allowed_loss_amount: parseNumber(req.body["data[delivery_allowed_loss_amount]"]),
+    net_price: parseNumber(req.body["data[net_price]"]),
+    transportation_unit_price: parseNumber(req.body["data[transportation_unit_price]"]),
+    transportation_price: parseNumber(req.body["data[transportation_price]"])
   };
   var action = req.body.action;
   if (action === 'create') {

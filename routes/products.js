@@ -33,9 +33,9 @@ router.get('/api', function (req, res) {
 router.post('/api', function (req, res) {
   var data = {
     name: req.body["data[name]"],
-    allowed_waste: parseFloat(req.body["data[allowed_waste]"]),
-    allowed_waste_rate: parseFloat(req.body["data[allowed_waste_rate]"]),
-    waste_unit_cost: req.body["data[waste_unit_cost]"]
+    allowed_waste: parseFloat(req.body["data[allowed_waste]"].replace(/,/,'.')),
+    allowed_waste_rate: parseFloat(req.body["data[allowed_waste_rate]"].replace(/,/,'.')),
+    waste_unit_cost: parseFloat(req.body["data[waste_unit_cost]"].replace(/,/,'.'))
   };
   console.log('a ' + data.waste_unit_cost);
   var action = req.body.action;

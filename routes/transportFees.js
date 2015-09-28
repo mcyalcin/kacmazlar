@@ -75,7 +75,7 @@ router.post('/api', function(req, res) {
     product: req.body["data[product]"],
     from: req.body["data[from]"],
     to: req.body["data[to]"],
-    unit_price: req.body["data[unit_price]"]
+    unit_price: parseFloat(req.body["data[unit_price]"].replace(/,/,'.'))
   };
   var action = req.body.action;
   if (action == 'create') {

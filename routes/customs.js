@@ -62,9 +62,9 @@ router.get('/api', function (req, res) {
 router.post('/api', function (req, res) {
   var data = {
     product: req.body["data[product]"],
-    allowed: parseFloat(req.body["data[allowed]"]),
-    allowed_rate: parseFloat(req.body["data[allowed_rate]"]),
-    unit_cost: req.body["data[unit_cost]"],
+    allowed: parseFloat(req.body["data[allowed]"].replace(/,/,'.')),
+    allowed_rate: parseFloat(req.body["data[allowed_rate]"].replace(/,/,'.')),
+    unit_cost: parseFloat(req.body["data[unit_cost]"].replace(/,/,'.')),
     start_date: parseDate(req.body["data[start_date]"]),
     end_date: parseDate(req.body["data[end_date]"])
   };

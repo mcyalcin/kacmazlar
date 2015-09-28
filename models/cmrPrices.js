@@ -44,7 +44,7 @@ function parseDate(str) {
 router.post('/', function (req, res) {
   var data = {
     product: req.body["data[product]"],
-    price: req.body["data[price]"],
+    price: parseFloat(req.body["data[price]"].replace(/,/,'.')),
     start_date: parseDate(req.body["data[start_date]"]),
     end_date: parseDate(req.body["data[end_date]"])
   };
