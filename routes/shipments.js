@@ -81,6 +81,7 @@ router.get('/api', function (req, res) {
       row.payment_date = formatDate(row.payment_date);
       row.customs_entry_date = formatDate(row.customs_entry_date);
       row.customs_exit_date = formatDate(row.customs_exit_date);
+      row.transportation_payment_date = formatDate(row.transportation_payment_date);
       results.push(row);
     });
     query.on('end', function () {
@@ -289,7 +290,8 @@ router.post('/api', function (req, res) {
     delivery_allowed_loss_amount: parseNumber(req.body["data[delivery_allowed_loss_amount]"]),
     net_price: parseNumber(req.body["data[net_price]"]),
     transportation_unit_price: parseNumber(req.body["data[transportation_unit_price]"]),
-    transportation_price: parseNumber(req.body["data[transportation_price]"])
+    transportation_price: parseNumber(req.body["data[transportation_price]"]),
+    transportation_payment_date: parseDate(req.body["data[transportation_price]"])
   };
   var action = req.body.action;
   if (action === 'create') {
@@ -389,7 +391,7 @@ function insertShipment(client, done, data, res) {
         customs_loss, delivery_loss, customs_loss_unit_price, delivery_loss_unit_price, customs_loss_price,\
         delivery_loss_price, cmr_price, shipping_unit_price, shipping_price, net_price, customs_entry_date,\
         customs_exit_date, transportation_unit_price, transportation_price, customs_allowed_loss_amount, delivery_allowed_loss_amount) \
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31) \
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32) \
         RETURNING *;', [
     data.loading_date, data.delivery_date, data.cmr_date, data.payment_date, data.company_name,
     data.tractor_plate_number, data.trailer_plate_number, data.driver, data.loading_location, data.delivery_location,
@@ -397,7 +399,7 @@ function insertShipment(client, done, data, res) {
     data.customs_loss, data.delivery_loss, data.customs_loss_unit_price, data.delivery_loss_unit_price,
     data.customs_loss_price, data.delivery_loss_price, data.cmr_price, data.shipping_unit_price, data.shipping_price,
     data.net_price, data.customs_entry_date, data.customs_exit_date, data.transportation_unit_price, data.transportation_price,
-    data.customs_allowed_loss_amount, data.delivery_allowed_loss_amount
+    data.customs_allowed_loss_amount, data.delivery_allowed_loss_amount, data.transportation_payment_date
   ]);
   var result = {};
   query.on('row', function (row) {
@@ -408,6 +410,7 @@ function insertShipment(client, done, data, res) {
     row.payment_date = formatDate(row.payment_date);
     row.customs_entry_date = formatDate(row.customs_entry_date);
     row.customs_exit_date = formatDate(row.customs_exit_date);
+    row.transportation_payment_date = formatDate(row.transportation_payment_date);
     result = row;
   });
   query.on('end', function () {
@@ -451,7 +454,8 @@ function updateShipment(client, done, data, res) {
           transportation_unit_price=($29),\
           transportation_price=($30),\
           customs_allowed_loss_amount=($31),\
-          delivery_allowed_loss_amount=($32)\
+          delivery_allowed_loss_amount=($32),\
+          transportation_payment_date=($33)\
         WHERE id=($26)\
         RETURNING *;', [
     data.loading_date, data.delivery_date, data.cmr_date, data.payment_date, data.company_name,
@@ -460,7 +464,8 @@ function updateShipment(client, done, data, res) {
     data.customs_loss, data.delivery_loss, data.customs_loss_unit_price, data.delivery_loss_unit_price,
     data.customs_loss_price, data.delivery_loss_price, data.cmr_price, data.shipping_unit_price, data.shipping_price,
     data.net_price, data.id, data.customs_entry_date, data.customs_exit_date, data.transportation_unit_price,
-    data.transportation_price, data.customs_allowed_loss_amount, data.delivery_allowed_loss_amount
+    data.transportation_price, data.customs_allowed_loss_amount, data.delivery_allowed_loss_amount,
+    data.transportation_payment_date
   ]);
   var result = {};
   query.on('row', function (row) {
@@ -471,7 +476,7 @@ function updateShipment(client, done, data, res) {
     row.payment_date = formatDate(row.payment_date);
     row.customs_entry_date = formatDate(row.customs_entry_date);
     row.customs_exit_date = formatDate(row.customs_exit_date);
-    console.log(row);
+    row.transportation_payment_date = formatDate(row.transportation_payment_date);
     result = row;
   });
   query.on('end', function () {

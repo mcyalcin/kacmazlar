@@ -101,6 +101,11 @@ $(document).ready(function () {
         type: 'date',
         dateFormat: 'd.m.yy'
       }, {
+        label: 'Navlun Hakediş Tarihi:',
+        name: 'transportation_payment_date',
+        type: 'date',
+        dateFormat: 'd.m.yy'
+      }, {
         label: 'Firma Adı:',
         name: 'company_name',
         type: 'hidden'
@@ -151,7 +156,8 @@ $(document).ready(function () {
         {"data": "net_price", defaultContent:""},
         {"data": "payment_date", defaultContent:""},
         {"data": "transportation_unit_price", defaultContent:""},
-        {"data": "transportation_price", defaultContent:""}
+        {"data": "transportation_price", defaultContent:""},
+        {"data": "transportation_payment_date", defaultContent:""}
       ],
       tableTools: {
         sRowSelect: "os",
