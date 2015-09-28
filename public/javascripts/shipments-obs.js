@@ -33,13 +33,7 @@ $(document).ready(function () {
       {"data": "delivery_loss", defaultContent: ""},
       {"data": "delivery_loss_unit_price", defaultContent: ""},
       {"data": "delivery_loss_price", defaultContent: ""},
-      {"data": "cmr_price", defaultContent: ""},
-      {"data": "shipping_unit_price", defaultContent: ""},
-      {"data": "shipping_price", defaultContent: ""},
-      {"data": "net_price", defaultContent: ""},
-      {"data": "payment_date", defaultContent: ""},
-      {"data": "transportation_unit_price", defaultContent: ""},
-      {"data": "transportation_price", defaultContent: ""}
+      {"data": "cmr_price", defaultContent: ""}
     ],
     tableTools: {
       sRowSelect: "os",
