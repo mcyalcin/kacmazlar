@@ -325,13 +325,6 @@ router.post('/api', function (req, res) {
         var query = client.query('select * from shipments where id=($1)', [data.id]);
         var result = {};
         query.on('row', function (row) {
-          row.DT_RowId = row.id;
-          row.loading_date = formatDate(row.loading_date);
-          row.delivery_date = formatDate(row.delivery_date);
-          row.cmr_date = formatDate(row.cmr_date);
-          row.payment_date = formatDate(row.payment_date);
-          row.customs_entry_date = formatDate(row.customs_entry_date);
-          row.customs_exit_date = formatDate(row.customs_exit_date);
           result = row;
           result.customs_weight = data.customs_weight;
           result.customs_entry_date = data.customs_entry_date;
@@ -348,13 +341,6 @@ router.post('/api', function (req, res) {
         var query = client.query('select * from shipments where id=($1)', [data.id]);
         var result = {};
         query.on('row', function (row) {
-          row.DT_RowId = row.id;
-          row.loading_date = formatDate(row.loading_date);
-          row.delivery_date = formatDate(row.delivery_date);
-          row.cmr_date = formatDate(row.cmr_date);
-          row.payment_date = formatDate(row.payment_date);
-          row.customs_entry_date = formatDate(row.customs_entry_date);
-          row.customs_exit_date = formatDate(row.customs_exit_date);
           result = row;
           result.delivery_weight = data.delivery_weight;
           result.delivery_date = data.delivery_date;
