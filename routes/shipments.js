@@ -459,7 +459,9 @@ function updateShipment(client, done, data, res) {
           customs_entry_date=($27),\
           customs_exit_date=($28),\
           transportation_unit_price=($29),\
-          transportation_price=($30)\
+          transportation_price=($30),\
+          customs_allowed_loss_amount=($31),\
+          delivery_allowed_loss_amount=($32)\
         WHERE id=($26)\
         RETURNING *;', [
     data.loading_date, data.delivery_date, data.cmr_date, data.payment_date, data.company_name,
@@ -467,7 +469,8 @@ function updateShipment(client, done, data, res) {
     data.cmr_number, data.product, data.loading_weight, data.customs_weight, data.delivery_weight,
     data.customs_loss, data.delivery_loss, data.customs_loss_unit_price, data.delivery_loss_unit_price,
     data.customs_loss_price, data.delivery_loss_price, data.cmr_price, data.shipping_unit_price, data.shipping_price,
-    data.net_price, data.id, data.customs_entry_date, data.customs_exit_date, data.transportation_unit_price, data.transportation_price
+    data.net_price, data.id, data.customs_entry_date, data.customs_exit_date, data.transportation_unit_price,
+    data.transportation_price, data.customs_allowed_loss_amount, data.delivery_allowed_loss_amount
   ]);
   var result = {};
   query.on('row', function (row) {
