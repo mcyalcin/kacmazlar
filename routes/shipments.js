@@ -217,6 +217,34 @@ function setCmrData(client, done, data, res, callback) {
     });
     cmrQuery.on('end', function () {
       data.cmr_price = result.price;
+      setDueData(client, done, data, res, callback);
+    });
+  } else {
+    setDueData(client, done, data, res, callback);
+  }
+}
+
+function setDueData(client, done, data, res, callback) {
+  if (data.product && data.loading_location && data.delivery_location) {
+    // language=SQL
+    console.log(data);
+    var priceQuery = client.query('\
+      SELECT * FROM transport_prices t \
+        LEFT JOIN products p ON t.product = p.id \
+        LEFT JOIN locations fr ON t.from = fr.id \
+        LEFT JOIN locations o ON t.to = o.id \
+      WHERE \
+        p.name LIKE ($1) AND \
+        fr.name LIKE ($2) AND \
+        o.name LIKE ($3)',
+      [data.product, data.loading_location, data.delivery_location]);
+    var result = {};
+    priceQuery.on('row', function (row) {
+      result = row;
+      console.log(row);
+    });
+    priceQuery.on('end', function () {
+      data.transportation_unit_price = result.unit_price;
       callback(client, done, data, res, callback);
     });
   } else {
@@ -355,6 +383,9 @@ function doCalculations(data) {
   if (data.shipping_unit_price && !data.shipping_price) {
     data.shipping_price = data.shipping_unit_price * data.loading_weight;
   }
+  if (!isNaN(data.transportation_unit_price) && isNaN(data.transportation_price)) {
+    data.transportation_price = data.transportation_unit_price * Math.min(data.loading_weight, data.delivery_weight);
+  }
   data.net_price = data.shipping_price - data.customs_loss_price - data.delivery_loss_price - data.cmr_price;
   return data;
 }
@@ -395,44 +426,8 @@ function insertShipment(client, done, data, res) {
   });
 }
 
-//function updateCustoms(client, done, data, res) {
-//  data = doCalculations(data);
-//  // language=SQL
-//  var query = client.query('UPDATE shipments\
-//        SET \
-//          customs_weight=($1), \
-//          customs_entry_date=($2),\
-//          customs_exit_date=($3), \
-//          customs_loss=($4), \
-//          customs_loss_price=($5)\
-//        WHERE id=($6)\
-//        RETURNING *;', [
-//    data.customs_weight, data.customs_entry_date, data.customs_exit_date,
-//    data.customs_loss,
-//    data.customs_loss_price,
-//    data.id
-//  ]);
-//  var result = {};
-//  query.on('row', function (row) {
-//    row.DT_RowId = row.id;
-//    row.loading_date = formatDate(row.loading_date);
-//    row.delivery_date = formatDate(row.delivery_date);
-//    row.cmr_date = formatDate(row.cmr_date);
-//    row.payment_date = formatDate(row.payment_date);
-//    row.customs_entry_date = formatDate(row.customs_entry_date);
-//    row.customs_exit_date = formatDate(row.customs_exit_date);
-//    console.log(row);
-//    result = row;
-//  });
-//  query.on('end', function () {
-//    done();
-//    return res.json(result);
-//  });
-//}
-
 function updateShipment(client, done, data, res) {
   data = doCalculations(data);
-  // TODO: fix the update statement
   // language=SQL
   var query = client.query('UPDATE shipments\
         SET \
@@ -462,7 +457,9 @@ function updateShipment(client, done, data, res) {
           shipping_price=($24), \
           net_price=($25),\
           customs_entry_date=($27),\
-          customs_exit_date=($28)\
+          customs_exit_date=($28),\
+          transportation_unit_price=($29),\
+          transportation_price=($30)\
         WHERE id=($26)\
         RETURNING *;', [
     data.loading_date, data.delivery_date, data.cmr_date, data.payment_date, data.company_name,
@@ -470,7 +467,7 @@ function updateShipment(client, done, data, res) {
     data.cmr_number, data.product, data.loading_weight, data.customs_weight, data.delivery_weight,
     data.customs_loss, data.delivery_loss, data.customs_loss_unit_price, data.delivery_loss_unit_price,
     data.customs_loss_price, data.delivery_loss_price, data.cmr_price, data.shipping_unit_price, data.shipping_price,
-    data.net_price, data.id, data.customs_entry_date, data.customs_exit_date
+    data.net_price, data.id, data.customs_entry_date, data.customs_exit_date, data.transportation_unit_price, data.transportation_price
   ]);
   var result = {};
   query.on('row', function (row) {
