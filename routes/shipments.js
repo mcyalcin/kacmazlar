@@ -334,7 +334,7 @@ router.post('/api', function (req, res) {
         var result = {};
         query.on('row', function (row) {
           result = row;
-          if (isNaN(result.customs_weight)) result.customs_weight = data.customs_weight;
+          if (!result.customs_weight) result.customs_weight = data.customs_weight;
           if (!result.customs_entry_date) result.customs_entry_date = data.customs_entry_date;
           if (!result.customs_exit_date) result.customs_exit_date = data.customs_exit_date;
         });
@@ -350,12 +350,12 @@ router.post('/api', function (req, res) {
         var result = {};
         query.on('row', function (row) {
           result = row;
-          if (isNaN(result.customs_weight)) result.customs_weight = data.customs_weight;
+          if (!result.customs_weight) result.customs_weight = data.customs_weight;
           if (!result.customs_entry_date) result.customs_entry_date = data.customs_entry_date;
           if (!result.customs_exit_date) result.customs_exit_date = data.customs_exit_date;
-          if (isNaN(result.delivery_weight)) result.delivery_weight = data.delivery_weight;
-          if (isNaN(result.delivery_date)) result.delivery_date = data.delivery_date;
-          if (isNaN(result.delivery_location)) result.delivery_location = data.delivery_location;
+          if (!result.delivery_weight) result.delivery_weight = data.delivery_weight;
+          if (!result.delivery_date) result.delivery_date = data.delivery_date;
+          if (!result.delivery_location) result.delivery_location = data.delivery_location;
         });
         query.on('end', function() {
           setLoss(client, done, result, res, updateShipment);
