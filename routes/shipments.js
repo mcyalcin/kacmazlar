@@ -293,7 +293,7 @@ router.post('/api', function (req, res) {
     net_price: parseNumber(req.body["data[net_price]"]),
     transportation_unit_price: parseNumber(req.body["data[transportation_unit_price]"]),
     transportation_price: parseNumber(req.body["data[transportation_price]"]),
-    transportation_payment_date: parseDate(req.body["data[transportation_price]"])
+    transportation_payment_date: parseDate(req.body["data[transportation_payment_date]"])
   };
   var action = req.body.action;
   if (action === 'create') {
@@ -334,9 +334,9 @@ router.post('/api', function (req, res) {
         var result = {};
         query.on('row', function (row) {
           result = row;
-          result.customs_weight = data.customs_weight;
-          result.customs_entry_date = data.customs_entry_date;
-          result.customs_exit_date = data.customs_exit_date;
+          if (isNaN(result.customs_weight)) result.customs_weight = data.customs_weight;
+          if (isNaN(result.customs_entry_date)) result.customs_entry_date = data.customs_entry_date;
+          if (isNaN(result.customs_exit_date)) result.customs_exit_date = data.customs_exit_date;
         });
         query.on('end', function() {
           setLoss(client, done, result, res, updateShipment);
@@ -353,9 +353,9 @@ router.post('/api', function (req, res) {
           if (isNaN(result.customs_weight)) result.customs_weight = data.customs_weight;
           if (isNaN(result.customs_entry_date)) result.customs_entry_date = data.customs_entry_date;
           if (isNaN(result.customs_exit_date)) result.customs_exit_date = data.customs_exit_date;
-          result.delivery_weight = data.delivery_weight;
-          result.delivery_date = data.delivery_date;
-          result.delivery_location = data.delivery_location;
+          if (isNaN(result.delivery_weight)) result.delivery_weight = data.delivery_weight;
+          if (isNaN(result.delivery_date)) result.delivery_date = data.delivery_date;
+          if (isNaN(result.delivery_location)) result.delivery_location = data.delivery_location;
         });
         query.on('end', function() {
           setLoss(client, done, result, res, updateShipment);
@@ -378,10 +378,10 @@ function doCalculations(data) {
     data.customs_loss_price = 0;
   }
   if (data.shipping_unit_price && !data.shipping_price) {
-    data.shipping_price = data.shipping_unit_price * data.loading_weight;
+    data.shipping_price = data.shipping_unit_price * Math.min(data.loading_weight, data.delivery_weight);
   }
   if (!isNaN(data.transportation_unit_price) && isNaN(data.transportation_price)) {
-    data.transportation_price = data.transportation_unit_price * Math.min(data.loading_weight, data.delivery_weight);
+    data.transportation_price = data.transportation_unit_price * data.delivery_weight;
   }
   data.net_price = data.shipping_price - data.customs_loss_price - data.delivery_loss_price - data.cmr_price;
   return data;
