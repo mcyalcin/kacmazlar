@@ -117,6 +117,19 @@ $(document).ready(function () {
         name: 'delivery_location',
         type: 'select',
         options: data.locationOptions
+      }, {
+        label: 'Gümrük Tonaji',
+        name: 'customs_weight'
+      }, {
+        label: 'Gümrüğe Giriş Tarihi:',
+        name: 'customs_entry_date',
+        type: 'date',
+        dateFormat: 'd.m.yy'
+      }, {
+        label: 'Gümrükten Çıkış Tarihi:',
+        name: 'customs_exit_date',
+        type: 'date',
+        dateFormat: 'd.m.yy'
       }]
     });
 

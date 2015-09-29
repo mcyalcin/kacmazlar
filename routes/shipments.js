@@ -254,7 +254,9 @@ function setDueData(client, done, data, res, callback) {
 }
 
 function parseNumber(x) {
-  return parseFloat(x.replace(/,/,'.'));
+  if (x) {
+    return parseFloat(x.replace(/,/, '.'));
+  }
 }
 
 // TODO: Implement authorization
@@ -348,6 +350,9 @@ router.post('/api', function (req, res) {
         var result = {};
         query.on('row', function (row) {
           result = row;
+          if (isNaN(result.customs_weight)) result.customs_weight = data.customs_weight;
+          if (isNaN(result.customs_entry_date)) result.customs_entry_date = data.customs_entry_date;
+          if (isNaN(result.customs_exit_date)) result.customs_exit_date = data.customs_exit_date;
           result.delivery_weight = data.delivery_weight;
           result.delivery_date = data.delivery_date;
           result.delivery_location = data.delivery_location;
@@ -385,12 +390,14 @@ function doCalculations(data) {
 function insertShipment(client, done, data, res) {
   data = doCalculations(data);
   // language=SQL
-  var query = client.query('INSERT INTO shipments\
-        (loading_date, delivery_date, cmr_date, payment_date, company_name, tractor_plate_number, trailer_plate_number, \
-        driver, loading_location, delivery_location, cmr_number, product, loading_weight, customs_weight, delivery_weight,\
+  var query = client.query('INSERT INTO shipments (\
+        loading_date, delivery_date, cmr_date, payment_date, company_name, \
+        tractor_plate_number, trailer_plate_number, driver, loading_location, delivery_location, \
+        cmr_number, product, loading_weight, customs_weight, delivery_weight,\
         customs_loss, delivery_loss, customs_loss_unit_price, delivery_loss_unit_price, customs_loss_price,\
-        delivery_loss_price, cmr_price, shipping_unit_price, shipping_price, net_price, customs_entry_date,\
-        customs_exit_date, transportation_unit_price, transportation_price, customs_allowed_loss_amount, delivery_allowed_loss_amount) \
+        delivery_loss_price, cmr_price, shipping_unit_price, shipping_price, net_price,\
+        customs_entry_date, customs_exit_date, transportation_unit_price, transportation_price, customs_allowed_loss_amount,\
+        delivery_allowed_loss_amount, transportation_payment_date) \
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32) \
         RETURNING *;', [
     data.loading_date, data.delivery_date, data.cmr_date, data.payment_date, data.company_name,
