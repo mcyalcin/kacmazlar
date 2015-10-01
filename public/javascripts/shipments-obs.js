@@ -32,8 +32,7 @@ $(document).ready(function () {
       {"data": "delivery_allowed_loss_amount", defaultContent: ""},
       {"data": "delivery_loss", defaultContent: ""},
       {"data": "delivery_loss_unit_price", defaultContent: ""},
-      {"data": "delivery_loss_price", defaultContent: ""},
-      {"data": "cmr_price", defaultContent: ""}
+      {"data": "delivery_loss_price", defaultContent: ""}
     ],
     tableTools: {
       sRowSelect: "os",
