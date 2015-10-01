@@ -45,8 +45,10 @@
       <th>Ürün Firesi</th>
       <th>Ürün Fire Fiyatı</th>
       <th>Ürün Cezası</th>
-      <% if (user.role == 'admin') { %>
+      <% if (user.role != 'ops' && user.role != 'observer') { %>
       <th>CMR Bedeli</th>
+      <% } %>
+      <% if (user.role == 'admin') { %>
       <th>Nakliye Fiyatı</th>
       <th>Nakliye Tutarı</th>
       <th>Net Hakediş Tutarı</th>
