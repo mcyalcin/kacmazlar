@@ -4,11 +4,19 @@ var pg = require('pg');
 //noinspection JSUnresolvedVariable
 var connectionString = process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/kacmaz';
 
+router.get('/ongoing', function(req, res) {
+  if (typeof req.user == 'undefined') {
+    res.render('login');
+  } else {
+    res.render('shipments', {user: req.user, ongoing: true});
+  }
+});
+
 router.get('/', function (req, res) {
   if (typeof req.user == 'undefined') {
     res.render('login');
   } else {
-    res.render('shipments', {user: req.user});
+    res.render('shipments', {user: req.user, ongoing: false});
   }
 });
 
@@ -67,6 +75,29 @@ function parseDate(str) {
   var split = str.split('.');
   return new Date(split[2], split[1] - 1, split[0]);
 }
+
+router.get('/api/ongoing', function(req, res) {
+  var results = [];
+  pg.connect(connectionString, function (err, client, done) {
+    // language=SQL
+    var query = client.query('SELECT * FROM shipments WHERE delivery_date IS NULL ORDER BY id DESC');
+    query.on('row', function (row) {
+      row.DT_RowId = row.id;
+      row.loading_date = formatDate(row.loading_date);
+      row.delivery_date = formatDate(row.delivery_date);
+      row.cmr_date = formatDate(row.cmr_date);
+      row.payment_date = formatDate(row.payment_date);
+      row.customs_entry_date = formatDate(row.customs_entry_date);
+      row.customs_exit_date = formatDate(row.customs_exit_date);
+      row.transportation_payment_date = formatDate(row.transportation_payment_date);
+      results.push(row);
+    });
+    query.on('end', function () {
+      done();
+      return res.json({data: results});
+    });
+  });
+});
 
 router.get('/api', function (req, res) {
   var results = [];

@@ -5,15 +5,55 @@
   <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>-->
   <!--<script src="https://cdn.datatables.net/plug-ins/1.10.9/sorting/date-eu.js"></script>-->
   <% include partials/header.ejs %>
+  <% if (ongoing) { %>
   <% if (user.role == 'admin') { %>
-  <script src="javascripts/shipments.js"></script>
+  <script src="/javascripts/shipments-ongoing.js"></script>
   <% } else if (user.role == 'customs') { %>
-  <script src="javascripts/shipments-customs.js"></script>
+  <script src="/javascripts/shipments-customs.js"></script>
   <% } else if (user.role == 'field') { %>
-  <script src="javascripts/shipments-field.js"></script>
+  <script src="/javascripts/shipments-field.js"></script>
   <% } else { %>
-  <script src="javascripts/shipments-obs.js"></script>
+  <script src="/javascripts/shipments-obs.js"></script>
   <% } %>
+  <% } else { %>
+  <% if (user.role == 'admin') { %>
+  <script src="/javascripts/shipments.js"></script>
+  <% } else if (user.role == 'customs') { %>
+  <script src="/javascripts/shipments-customs.js"></script>
+  <% } else if (user.role == 'field') { %>
+  <script src="/javascripts/shipments-field.js"></script>
+  <% } else { %>
+  <script src="/javascripts/shipments-obs.js"></script>
+  <% } %>
+  <% } %>
+  <script>
+    $(function () {
+      var availableTags = [
+        "ActionScript",
+        "AppleScript",
+        "Asp",
+        "BASIC",
+        "C",
+        "C++",
+        "Clojure",
+        "COBOL",
+        "ColdFusion",
+        "Erlang",
+        "Fortran",
+        "Groovy",
+        "Haskell",
+        "Java",
+        "JavaScript",
+        "Lisp",
+        "Perl",
+        "PHP",
+        "Python",
+        "Ruby",
+        "Scala",
+        "Scheme"
+      ];
+    });
+  </script>
 </head>
 <body>
 <% include partials/nav.ejs %>
