@@ -1,4 +1,31 @@
 /* global $ */
+(function ($, DataTable) {
+
+  if (!DataTable.ext.editorFields) {
+    DataTable.ext.editorFields = {};
+  }
+
+  DataTable.Editor.fieldTypes.acom = {
+    create: function ( conf ) {
+      conf._input = $(
+        '<input id="' + conf.name + '">');
+      conf._input.autocomplete({
+        source: conf.options
+      });
+      return conf._input;
+    },
+
+    get: function ( conf ) {
+      return conf._input[0].value;
+    },
+
+    set: function ( conf, val ) {
+      conf._input[0].value = val;
+    }
+  };
+
+})(jQuery, jQuery.fn.dataTable);
+
 $(document).ready(function () {
   $.getJSON('shipments/api/options', function (data) {
     var loadingEditor = new $.fn.dataTable.Editor({
@@ -44,17 +71,17 @@ $(document).ready(function () {
       }, {
         label: 'Çekici Plakası:',
         name: 'tractor_plate_number',
-        type: 'select',
+        type: 'acom',
         options: data.tractorPlateOptions
       }, {
         label: 'Dorse Plakası:',
         name: 'trailer_plate_number',
-        type: 'select',
+        type: 'acom',
         options: data.trailerPlateOptions
       }, {
         label: 'Şöför:',
         name: 'driver',
-        type: 'select',
+        type: 'acom',
         options: data.driverOptions
       }, {
         label: 'Yükleme Yeri',

@@ -1,66 +1,34 @@
 /* global $, jQuery */
 (function ($, DataTable) {
 
-  if ( ! DataTable.ext.editorFields ) {
+  if (!DataTable.ext.editorFields) {
     DataTable.ext.editorFields = {};
   }
 
-  var Editor = DataTable.Editor;
-  var _fieldTypes = DataTable.ext.editorFields;
-
-  _fieldTypes.todo = {
+  DataTable.Editor.fieldTypes.acom = {
     create: function ( conf ) {
-      var that = this;
-
-      conf._enabled = true;
-
-      // Create the elements to use for the input
       conf._input = $(
-        '<div>'+
-        '<button class="inputButton" value="0">To do</button>'+
-        '<button class="inputButton" value="1">Done</button>'+
-        '</div>')[0];
-
-      // Use the fact that we are called in the Editor instance's scope to call
-      // the API method for setting the value when needed
-      $('button.inputButton', conf._input).click( function () {
-        if ( conf._enabled ) {
-          that.set( conf.name, $(this).attr('value') );
-        }
-
-        return false;
-      } );
-
+        '<input id="' + conf.name + '">');
+      conf._input.autocomplete({
+        source: conf.options
+      });
       return conf._input;
     },
 
     get: function ( conf ) {
-      return $('button.selected', conf._input).attr('value');
+      return conf._input[0].value;
     },
 
     set: function ( conf, val ) {
-      $('button.selected', conf._input).removeClass( 'selected' );
-      $('button.inputButton[value='+val+']', conf._input).addClass('selected');
-    },
-
-    enable: function ( conf ) {
-      conf._enabled = true;
-      $(conf._input).removeClass( 'disabled' );
-    },
-
-    disable: function ( conf ) {
-      conf._enabled = false;
-      $(conf._input).addClass( 'disabled' );
+      conf._input[0].value = val;
     }
   };
 
 })(jQuery, jQuery.fn.dataTable);
 
-var editor;
-
 $(document).ready(function () {
   $.getJSON('/shipments/api/options', function (data) {
-    editor = new $.fn.dataTable.Editor({
+    var editor = new $.fn.dataTable.Editor({
       i18n: {
         create: {
           button: "Yarat",
