@@ -9,6 +9,7 @@ var passport = require('passport');
 var flash = require('connect-flash');
 
 //var routes = require('./routes/index');
+var payments = require('./routes/payments');
 var drivers = require('./routes/drivers');
 var locations = require('./routes/locations');
 var cmrPrices = require('./routes/cmrPrices');
@@ -46,6 +47,7 @@ app.use(passport.session());
 app.use(flash());
 
 require('./routes/index')(app, passport);
+app.use('/payments', payments);
 app.use('/drivers', drivers);
 app.use('/locations', locations);
 app.use('/cmr_prices', cmrPrices);
